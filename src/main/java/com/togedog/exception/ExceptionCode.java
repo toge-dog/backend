@@ -13,6 +13,8 @@ public enum ExceptionCode {
     //member 관련
     MEMBER_NOT_FOUND(404,"Member Not Found"),
     MEMBER_EXISTS(409,"Member exists"),
+    PHONE_EXISTS(409, "Phone exists"),
+    NICKNAME_EXISTS(409, "NickName exists"),
 
     //Pet 관련
     PET_NOT_FOUND(404, "Pet Not Found"),
