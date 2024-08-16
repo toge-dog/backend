@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MatchService {
     private final MatchRepository matchRepository;
     //private final matchStandByRepository matchStandByRepository;
@@ -47,7 +48,7 @@ public class MatchService {
     }
 
     private void findCheckOtherMatchStatusHosting(long memberId) {
-        List<Match> matches = matchRepository.findByMemberIdAndMatchStatus(memberId, Match.MatchStatus.MATCH_HOSTING);
+        List<Match> matches = matchRepository.findByHostMemberIdAndMatchStatus(memberId, Match.MatchStatus.MATCH_HOSTING);
         if (!matches.isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.MATCH_ALREADY_START);
         }
