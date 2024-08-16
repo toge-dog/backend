@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MatchRepository extends JpaRepository<Match, Long>{
-    Optional<Match> findByMatchingStatus(String email);
-    Optional<Match> findByMemberId(long memberId);
+    Optional<Match> findByMatchStatus(String email);
+    Optional<Match> findByHostMemberId(long memberId);
     Optional<Match> findByLatitudeAndLongitude(double latitude, double longitude);
-    List<Match> findByMemberIdAndMatchStatus(long memberId, Match.MatchStatus matchStatus);
+    List<Match> findByHostMemberIdAndMatchStatus(long memberId, Match.MatchStatus matchStatus);
 }

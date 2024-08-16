@@ -43,7 +43,7 @@ public class MatchController {
 //        return ResponseEntity.created(location).build();
 //    }
 
-    @PostMapping("/{member-id}")
+    @PatchMapping("/{member-id}")
     public ResponseEntity patchMember(@PathVariable("member-id") @Positive long memberId,
                                       @Valid @RequestBody MatchDto.Patch requestBody) {
         requestBody.setMemberId(memberId); //jwt 적용 시 삭제
