@@ -3,7 +3,7 @@ package com.togedog.auth.userdetails;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
-import com.togedog.member.member.Member;
+import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
