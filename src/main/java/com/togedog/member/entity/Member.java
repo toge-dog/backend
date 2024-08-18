@@ -1,13 +1,17 @@
-package com.togedog.member.member;
+package com.togedog.member.entity;
 
+import com.togedog.friend.entity.Friend;
+import com.togedog.matching.entity.Matching;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
+@Entity(name = "member")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,6 +38,9 @@ public class Member {
     @Column(name = "member_phone", nullable = false)
     private String phone;
 
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @Column(name = "member_profile_image")
     private String profileImage;
 
@@ -45,11 +52,41 @@ public class Member {
     private int reportCount;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "member_report_status", nullable = false)
+    @Column(name = "member_status", nullable = false)
     private memberStatus status = Member.memberStatus.RESTRICTION;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "member")
+    private List<Friend> friends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Friend> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Matching> matchings = new ArrayList<>();
+
+    public void addMatching(Matching matching) {
+        this.matchings.add(matching);
+        if(matching.getMember() != this) {
+            matching.setMember(this);
+        }
+    }
+
+    public void addFriend(Friend friend) {
+        this.friends.add(friend);
+        if (friend.getMember() != this) {
+            friend.setMember(this);
+        }
+    }
+
+    public void addMember(Friend friend) {
+        this.members.add(friend);
+        if (friend.getMember() != this) {
+            friend.setMember(this);
+        }
+    }
 
     public enum memberGender {
         M("남성"),

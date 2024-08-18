@@ -2,7 +2,9 @@ package com.togedog.member.service;
 
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
-import com.togedog.member.member.Member;
+import com.togedog.friend.repository.FriendRepository;
+import com.togedog.friend.service.FriendService;
+import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +16,13 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final FriendService friendService;
+    private final FriendRepository friendRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, FriendService friendService, FriendRepository friendRepository) {
         this.memberRepository = memberRepository;
+        this.friendService = friendService;
+        this.friendRepository = friendRepository;
     }
 
     public Member createMember(Member member) {

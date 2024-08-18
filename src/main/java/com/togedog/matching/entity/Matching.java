@@ -1,6 +1,6 @@
 package com.togedog.matching.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +28,14 @@ public class Matching extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Long hostMemberId;
+    private Member member;
+
+    public void setMember(Member member) {
+        this.member = member;
+        if (!member.getMatchings().contains(this)) {
+            member.addMatching(this);
+        }
+    }
 
     @AllArgsConstructor
     public enum MatchingStatus{
