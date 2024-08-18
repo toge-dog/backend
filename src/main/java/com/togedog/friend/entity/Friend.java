@@ -35,8 +35,6 @@ public class Friend {
         }
     }
 
-
-
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

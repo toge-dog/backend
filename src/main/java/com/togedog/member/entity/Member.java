@@ -1,7 +1,7 @@
 package com.togedog.member.entity;
 
 import com.togedog.friend.entity.Friend;
-import com.togedog.matching.entity.Matching;
+import com.togedog.match.entity.Match;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -64,14 +64,7 @@ public class Member {
     private List<Friend> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Matching> matchings = new ArrayList<>();
-
-    public void addMatching(Matching matching) {
-        this.matchings.add(matching);
-        if(matching.getMember() != this) {
-            matching.setMember(this);
-        }
-    }
+    private List<Math> maths = new ArrayList<>();
 
     public void addFriend(Friend friend) {
         this.friends.add(friend);
