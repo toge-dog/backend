@@ -22,7 +22,7 @@ public class MatchService {
     //private final matchStandByRepository matchStandByRepository;
 
     public Match createMatch(Match match) {
-        findCheckOtherMatchStatusHosting(match.getHostMemberId());
+        findCheckOtherMatchStatusHosting(match.getMember().getMemberId());
 //        changeMatchStandByStatusWaitToReject(match.getMatchId());
         return matchRepository.save(match);
     }

@@ -1,4 +1,4 @@
-package com.togedog.friend.Controller;
+package com.togedog.friend.controller;
 
 import com.togedog.friend.dto.Dto;
 import com.togedog.friend.entity.Friend;

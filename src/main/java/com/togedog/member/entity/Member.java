@@ -57,14 +57,22 @@ public class Member {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-     @OneToMany(mappedBy = "member")
+
+    @OneToMany(mappedBy = "member")
     private List<Friend> friends = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Friend> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Math> maths = new ArrayList<>();
+    private List<Matching> matchings = new ArrayList<>();
+
+    public void addMatching(Matching matching) {
+        matchings.add(matching);
+        if (matching.getHostMember() != this) {
+            matching.addMember(this);
+        }
+    }
 
     public void addFriend(Friend friend) {
         this.friends.add(friend);
@@ -99,7 +107,6 @@ public class Member {
         NO_RESTRICTION("활성 상태"),
         RESTRICTION("비활성 상태"),
         DELETED("탈퇴 상태");
-
 
         @Getter
         private String status;

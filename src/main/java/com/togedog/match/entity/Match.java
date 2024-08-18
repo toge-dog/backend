@@ -1,5 +1,6 @@
 package com.togedog.match.entity;
 
+import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,9 +26,9 @@ public class Match extends Auditable {
     @Enumerated(value = EnumType.STRING)
     private MatchStatus matchStatus = MatchStatus.MATCH_HOSTING;
 
-//    @ManyToOne
-//    @JoinColumn(name = "MEMBER_ID")
-    private long hostMemberId;
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     @AllArgsConstructor
     public enum MatchStatus{

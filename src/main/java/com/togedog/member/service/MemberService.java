@@ -19,19 +19,19 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-     private final FriendService friendService;
-    private final FriendRepository friendRepository;
+    private final FriendService friendService;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
 
     public MemberService(MemberRepository memberRepository,
+                         FriendService friendService,
                          PasswordEncoder passwordEncoder,
                          CustomAuthorityUtils authorityUtils) {
         this.memberRepository = memberRepository;
+        this.friendService = friendService;
         this.passwordEncoder = passwordEncoder;
         this.authorityUtils = authorityUtils;
-        this.friendService = friendService;
-        this.friendRepository = friendRepository;
+
     }
 
     public Member createMember(Member member) {
