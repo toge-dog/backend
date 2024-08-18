@@ -1,7 +1,7 @@
 package com.togedog.member.entity;
 
 import com.togedog.friend.entity.Friend;
-import com.togedog.match.entity.Match;
+import com.togedog.matching.entity.Matching;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,8 +38,11 @@ public class Member {
     @Column(name = "member_phone", nullable = false)
     private String phone;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "main_address", nullable = false)
+    private String mainAddress;
+
+    @Column(name = "detail_address", nullable = false)
+    private String detailAddress;
 
     @Column(name = "member_profile_image")
     private String profileImage;
@@ -53,7 +56,7 @@ public class Member {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "member_status", nullable = false)
-    private memberStatus status = Member.memberStatus.RESTRICTION;
+    private memberStatus status = memberStatus.RESTRICTION;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -64,7 +67,7 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Friend> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "hostMember")
     private List<Matching> matchings = new ArrayList<>();
 
     public void addMatching(Matching matching) {

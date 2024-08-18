@@ -1,4 +1,5 @@
-package com.togedog.match.entity;
+
+package com.togedog.matching.entity;
 
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-public class Match extends Auditable {
+public class Matching extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long matchId;
@@ -28,7 +29,14 @@ public class Match extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Member member;
+    private Member hostMember;
+
+    public void addMember(Member member) {
+        if (!member.getMatchings().contains(this)) {
+            member.addMatching(this);
+        }
+        this.hostMember = member;
+    }
 
     @AllArgsConstructor
     public enum MatchStatus{

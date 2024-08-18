@@ -1,11 +1,12 @@
-package com.togedog.match.controller;
+package com.togedog.matching.controller;
 
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
-import com.togedog.match.dto.MatchDto;
-import com.togedog.match.entity.Match;
-import com.togedog.match.mapper.MatchMapper;
-import com.togedog.match.service.MatchService;
+import com.togedog.matching.dto.MatchingDto;
+import com.togedog.matching.entity.Matching;
+import com.togedog.matching.mapper.MatchingMapper;
+import com.togedog.matching.service.MatchingService;
+import com.togedog.member.entity.Member;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,20 +21,22 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/match")
+@RequestMapping("/matching")
 @Validated
 @RequiredArgsConstructor
-public class MatchController {
-    private final static String MATCH_DEFAULT_URL = "/match";
-    private final MatchMapper mapper;
-    private final MatchService service;
+public class MatchingController {
+    private final static String MATCH_DEFAULT_URL = "/matching";
+    private final MatchingMapper mapper;
+    private final MatchingService service;
 
     @PostMapping("/{member-id}")
     public ResponseEntity postMatch(@PathVariable("member-id") @Positive long memberId,
-                                    @Valid @RequestBody MatchDto.Post requestBody){
-        requestBody.setMemberId(memberId); //jwt 적용 시 삭제
-        Match createMatch = service.createMatch(mapper.matchPostDtoToMatch(requestBody));
-        URI location = UriCreator.createUri(MATCH_DEFAULT_URL,createMatch.getMatchId());
+                                    @Valid @RequestBody MatchingDto.Post requestBody){
+        Member member = new Member();
+        member.setMemberId(memberId);
+        requestBody.setHostMember(member); //jwt 적용 시 삭제
+        Matching createMatching = service.createMatch(mapper.matchPostDtoToMatch(requestBody));
+        URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchId());
         return ResponseEntity.created(location).build();
     }
 //    @PostMapping
@@ -45,12 +48,14 @@ public class MatchController {
 
     @PatchMapping("/{member-id}")
     public ResponseEntity patchMember(@PathVariable("member-id") @Positive long memberId,
-                                      @Valid @RequestBody MatchDto.Patch requestBody) {
-        requestBody.setMemberId(memberId); //jwt 적용 시 삭제
-        Match updateMatch =
+                                      @Valid @RequestBody MatchingDto.Patch requestBody) {
+        Member member = new Member();
+        member.setMemberId(memberId);
+        requestBody.setHostMember(member); //jwt 적용 시 삭제
+        Matching updateMatching =
                 service.updateMatch(mapper.matchPatchDtoToMatch(requestBody));
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.matchToMatchResponseDto(updateMatch)),
+                new SingleResponseDto<>(mapper.matchToMatchResponseDto(updateMatching)),
                 HttpStatus.OK);
     }
 
@@ -58,20 +63,20 @@ public class MatchController {
     @GetMapping("/{match-id}")
     public ResponseEntity getMatch(@PathVariable("match-Id")
                                       @Positive long matchId) {
-        Match findMatch = service.findVerifiedMatch(matchId);
+        Matching findMatching = service.findVerifiedMatch(matchId);
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.matchToMatchResponseDto(findMatch)),
+                new SingleResponseDto<>(mapper.matchToMatchResponseDto(findMatching)),
                 HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity getMatches(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size){
-        Page<Match> pageMatches = service.findMatches(page - 1, size);
-        List<Match> matches = pageMatches.getContent();
+        Page<Matching> pageMatches = service.findMatches(page - 1, size);
+        List<Matching> matchings = pageMatches.getContent();
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.matchToMatchResponsesDto(matches), pageMatches),
+                new MultiResponseDto<>(mapper.matchToMatchResponsesDto(matchings), pageMatches),
                 HttpStatus.OK);
     }
 }
