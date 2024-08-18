@@ -34,8 +34,8 @@ public class MemberController {
         this.mapper = mapper;
     }
 
-    @PostMapping
-    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post) {
+    @PostMapping("/sign-up")
+    public ResponseEntity signUpMember(@Valid @RequestBody MemberDto.Post post) {
         Member member = service.createMember(mapper.memberPostToMember(post));
         URI location = UriCreator.createUri(MEMBER_DEFAULT_URL, member.getMemberId());
         return ResponseEntity.created(location).build();
