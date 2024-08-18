@@ -19,14 +19,18 @@ public enum ExceptionCode {
     PHONE_EXISTS(409, "Phone exists"),
     NICKNAME_EXISTS(409, "NickName exists"),
 
+    //friend 관련
+    REQUEST_NOT_FOUND(404, "Request Not Found"),
+
     //Pet 관련
     PET_NOT_FOUND(404, "Pet Not Found"),
     PET_EXISTS(409,"Pet exists");
 
     @Getter
-    private int status;
+    private int statusCode;
 
     @Getter
-    private String description;
+    private String statusDescription;
+
 
 }

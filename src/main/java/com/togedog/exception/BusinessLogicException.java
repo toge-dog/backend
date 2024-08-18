@@ -7,7 +7,7 @@ public class BusinessLogicException extends RuntimeException {
     private ExceptionCode exceptionCode;
 
     public BusinessLogicException(ExceptionCode exceptionCode) {
-        super(exceptionCode.getDescription());
+        super(exceptionCode.getStatusDescription());
         this.exceptionCode = exceptionCode;
     }
 }
