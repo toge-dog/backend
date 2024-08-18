@@ -57,8 +57,7 @@ public class Member {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "member")
+     @OneToMany(mappedBy = "member")
     private List<Friend> friends = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -87,6 +86,9 @@ public class Member {
             friend.setMember(this);
         }
     }
+
+     @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     public enum memberGender {
         M("남성"),

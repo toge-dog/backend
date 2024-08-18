@@ -1,5 +1,6 @@
 package com.togedog.member.service;
 
+import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
 import com.togedog.friend.repository.FriendRepository;
@@ -9,18 +10,26 @@ import com.togedog.member.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final FriendService friendService;
+     private final FriendService friendService;
     private final FriendRepository friendRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final CustomAuthorityUtils authorityUtils;
 
-    public MemberService(MemberRepository memberRepository, FriendService friendService, FriendRepository friendRepository) {
+    public MemberService(MemberRepository memberRepository,
+                         PasswordEncoder passwordEncoder,
+                         CustomAuthorityUtils authorityUtils) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authorityUtils = authorityUtils;
         this.friendService = friendService;
         this.friendRepository = friendRepository;
     }
@@ -29,6 +38,12 @@ public class MemberService {
         verifyExistMember(member.getEmail());
         verifyExistPhone(member.getPhone());
         verifyExistNickName(member.getNickName());
+
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+        List<String> roles = authorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
+
         Member verifiedMember = memberRepository.save(member);
         return verifiedMember;
     }
