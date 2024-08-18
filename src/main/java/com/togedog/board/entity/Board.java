@@ -1,6 +1,7 @@
 package com.togedog.board.entity;
 
 import com.togedog.audit.Auditable;
+import com.togedog.member.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,9 +27,9 @@ public class Board extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String contentImg;
 
-//    @ManyToOne
-//    @JoinColumn(name = "MEMBER_ID")
-//    private Member member;
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     @Column
     @Enumerated(value = EnumType.STRING)
