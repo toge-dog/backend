@@ -1,7 +1,9 @@
 package com.togedog.errorResponse;
 
 import com.togedog.exception.BusinessLogicException;
+import com.togedog.exception.ExceptionCode;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -37,6 +39,18 @@ public class ErrorResponse {
 
     public static ErrorResponse of(BusinessLogicException e) {
         return new ErrorResponse(e.getExceptionCode().getStatusCode(), e.getExceptionCode().getStatusDescription());
+    }
+
+    public static ErrorResponse of(ExceptionCode exceptionCode) {
+        return new ErrorResponse(exceptionCode.getStatusCode(), exceptionCode.getStatusDescription());
+    }
+
+    public static ErrorResponse of(HttpStatus httpStatus) {
+        return new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase());
+    }
+
+    public static ErrorResponse of(HttpStatus httpStatus, String message) {
+        return new ErrorResponse(httpStatus.value(), message);
     }
 
     @Getter

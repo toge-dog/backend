@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class JwtVerificationFilter extends OncePerRequestFilter {
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
@@ -26,6 +28,15 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         this.authorityUtils = authorityUtils;
     }
 
+    /**
+     * 요청이 들어올 때마다 실행 되는 메서드
+     * verifyJws 메서드를 통해 요청에 있는 token값을 확인
+     *
+     * @param source JSON 형식의 문자열
+     * @return 반환값 내용
+     * @throws 예외처리
+     * @author Tizesin(신민준)
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -38,7 +49,15 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private Map<String, Object> verifyJws(HttpServletRequest request) {
+    /**
+    * 요청에서 JWT토큰을 꺼내여 반환하는 메서드
+    *
+    * @param source JSON 형식의 문자열
+    * @return 반환값 내용
+    * @throws 예외처리
+    * @author Tizesin(신민준)
+    */
+    public Map<String, Object> verifyJws(HttpServletRequest request) {
         String jws = request.getHeader("Authorization").replace("Bearer ", "");
         String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
         Map<String, Object> claims = jwtTokenizer.getClaims(jws, base64EncodedSecretKey).getBody();
@@ -46,6 +65,15 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         return claims;
     }
 
+    /**
+    * 특정 조건에서 필터를 사용하지 않을 때 사용되는 메서드
+    * Authorization 헤더가 없거나 Bearer로 시작하지 않으면 필터를 적용하지 않음
+     *
+    * @param source JSON 형식의 문자열
+    * @return 반환값 내용
+    * @throws 예외처리
+    * @author Tizesin(신민준)
+    */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String authorization = request.getHeader("Authorization");
@@ -58,5 +86,16 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         List<GrantedAuthority> authorities = authorityUtils.createAuthorities((List)claims.get("roles"));
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    /**
+    * claims에서 memberId 값을 추출하는 메서드
+    *
+    * @param JWT에서의 claims 정보
+    * @return JWT에서의 memberId 값
+    * @author Tizesin(신민준)
+    */
+    public static String getMemberIdFromClaims(Map<String, Object> claims) {
+        return (String) claims.get("memberId");
     }
 }
