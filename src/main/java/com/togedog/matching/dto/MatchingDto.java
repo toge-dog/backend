@@ -13,8 +13,6 @@ public class MatchingDto {
     @Setter
     @AllArgsConstructor
     public static class Post{
-        private Member hostMember;
-
         private double latitude;
 
         private double longitude;
@@ -25,17 +23,10 @@ public class MatchingDto {
     public static class Patch{
         private long matchingId;
 
-        //jwt 적용 시 삭제
-        @NotBlank
-        private Member hostMember;
-
+//        //jwt 적용 시 삭제
 //        @NotBlank
-//        private double latitude;
-//
-//        @NotBlank
-//        private double longitude;
+//        private Member hostMember;
 
-        @NotBlank
         private Matching.MatchStatus matchStatus;
 
     }

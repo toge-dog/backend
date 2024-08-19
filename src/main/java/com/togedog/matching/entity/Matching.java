@@ -2,6 +2,7 @@ package com.togedog.matching.entity;
 
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import com.togedog.audit.Auditable;
@@ -11,18 +12,19 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = "hostMember", callSuper = false)
 public class Matching extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long matchId;
 
-    @Column(nullable = false)
+    @Column(name = "latitude",nullable = false)
     private double latitude;
 
-    @Column(nullable = false)
+    @Column(name = "longitude",nullable = false)
     private double longitude;
 
-    @Column
+    @Column(name = "matching_status")
     @Enumerated(value = EnumType.STRING)
     private MatchStatus matchStatus = MatchStatus.MATCH_HOSTING;
 
