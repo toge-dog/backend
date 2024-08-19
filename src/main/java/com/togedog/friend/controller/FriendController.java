@@ -5,6 +5,7 @@ import com.togedog.friend.dto.Dto;
 import com.togedog.friend.entity.Friend;
 import com.togedog.friend.mapper.FriendMapper;
 import com.togedog.friend.service.FriendService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/friends")
+@RequiredArgsConstructor
 public class FriendController {
     private final FriendService friendService;
     private final FriendMapper friendMapper;
-
-    public FriendController(FriendService friendService, FriendMapper friendMapper) {
-        this.friendService = friendService;
-        this.friendMapper = friendMapper;
-    }
 
     @GetMapping("/{friend-email}/{member-email}")
     public ResponseEntity getFriend(@PathVariable("friend-email") String friendEmail,
