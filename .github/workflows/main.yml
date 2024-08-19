@@ -2,7 +2,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ feat/ci-cd ]
+    branches: [ dev ]
 
 jobs:
   build:
