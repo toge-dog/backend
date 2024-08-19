@@ -2,6 +2,7 @@ package com.togedog.member.entity;
 
 import com.togedog.friend.entity.Friend;
 import com.togedog.matching.entity.Matching;
+import com.togedog.pet.entity.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -58,9 +59,13 @@ public class Member {
     @Column(name = "member_status", nullable = false)
     private memberStatus status = memberStatus.RESTRICTION;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PET_ID")
+    private Pet pet;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-     @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member")
     private List<Friend> friends = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

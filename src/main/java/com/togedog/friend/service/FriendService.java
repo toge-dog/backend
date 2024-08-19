@@ -6,6 +6,9 @@ import com.togedog.friend.entity.Friend;
 import com.togedog.friend.repository.FriendRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,11 @@ public class FriendService {
                 .orElseThrow(()-> new IllegalArgumentException("친구요청을 찾을수 없음"));
     }
 
+    @Transactional
+    public Page<Friend> getFriends(int page, int size) {
+        return friendRepository.findAll(PageRequest.of(page, size,
+                Sort.by("memberId").descending()));
+    }
 
     @Transactional
     public void addFriend(String fromEmail, String toEmail) {
