@@ -1,8 +1,19 @@
 package com.togedog.config;
 
+import com.togedog.auth.filter.JwtAuthenticationFilter;
+import com.togedog.auth.filter.JwtVerificationFilter;
+import com.togedog.auth.handler.MemberAuthenticationFailureHandler;
+import com.togedog.auth.handler.MemberAuthenticationSuccessHandler;
+import com.togedog.auth.jwt.JwtTokenizer;
+import com.togedog.auth.utils.CustomAuthorityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,59 +25,117 @@ import java.util.Arrays;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * authenticationEntryPoint와 accessDeniedHandler 추가
+ */
 @Configuration
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
+    private final JwtTokenizer jwtTokenizer;
+    private final CustomAuthorityUtils authorityUtils; // 추가
 
-    /**
-    * filterChain 옵션 설정
-    *
-    * @param  보안 설정 구성요소가 담긴 HttpSecurity 타입 객체
-    * @return 구성된 SecurityFilterChain 객체
-    * @throws 접근 허가가 없는 사용자가 접근 할 때 예외 발생
-    * @author Tizesin(신민준)
-    */
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer,
+                                 CustomAuthorityUtils authorityUtils) {
+        this.jwtTokenizer = jwtTokenizer;
+        this.authorityUtils = authorityUtils;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .headers().frameOptions().sameOrigin() //H2를 사용하기 위한 추가 문
                 .and()
                 .csrf().disable()        // 로컬에서 확인 시 사용 필요.
-                .cors(withDefaults())    // (3) corsConfigurationSource 사용
-                .formLogin().disable()   // (4)
-                .httpBasic().disable()   // (5)
+                .cors(withDefaults())    // corsConfigurationSource 사용
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .exceptionHandling()
+//                .authenticationEntryPoint(new MemberAuthenticationEntryPoint())  // 추가
+//                .accessDeniedHandler(new MemberAccessDeniedHandler())            // 추가
+                .and()
+                .apply(new CustomFilterConfigurer())   // (1)
+                .and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()                // (6)
+                        .anyRequest().permitAll()
                 );
         return http.build();
     }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//            .headers().frameOptions().sameOrigin()
+//            .and()
+//            .csrf().disable()
+//            .cors(withDefaults())
+//            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            .and()
+//            .formLogin().disable()
+//            .httpBasic().disable()
+//            .exceptionHandling()
+//            .authenticationEntryPoint(new MemberAuthenticationEntryPoint())  // 추가
+//            .accessDeniedHandler(new MemberAccessDeniedHandler())            // 추가
+//            .and()
+//            .apply(new CustomFilterConfigurer())
+//            .and()
+//            .authorizeHttpRequests(authorize -> authorize
+//                    .antMatchers(HttpMethod.POST, "/*/members").permitAll()
+//                    .antMatchers(HttpMethod.PATCH, "/*/members/**").hasRole("USER")
+//                    .antMatchers(HttpMethod.GET, "/*/members").hasRole("ADMIN")
+////                    .mvcMatchers(HttpMethod.GET, "/*/members").hasRole("ADMIN")
+//                    .antMatchers(HttpMethod.GET, "/*/members/**").hasAnyRole("USER", "ADMIN")
+//                    .antMatchers(HttpMethod.DELETE, "/*/members/**").hasRole("USER")
+//                    .antMatchers(HttpMethod.POST, "/*/coffees").hasRole("ADMIN")
+//                    .antMatchers(HttpMethod.PATCH, "/*/coffees/**").hasRole("ADMIN")
+//                    .antMatchers(HttpMethod.GET, "/*/coffees/**").hasAnyRole("USER", "ADMIN")
+//                    .antMatchers(HttpMethod.GET, "/*/coffees").permitAll()
+//                    .antMatchers(HttpMethod.DELETE, "/*/coffees").hasRole("ADMIN")
+//                    .antMatchers(HttpMethod.POST, "/*/orders").hasRole("USER")
+//                    .antMatchers(HttpMethod.PATCH, "/*/orders").hasAnyRole("USER", "ADMIN")
+//                    .antMatchers(HttpMethod.GET, "/*/orders/**").hasAnyRole("USER", "ADMIN")
+//                    .antMatchers(HttpMethod.DELETE, "/*/orders").hasRole("USER")
+//                    .anyRequest().permitAll()
+//            );
+//        return http.build();
+//    }
 
-    /**
-    * PasswordEncoder를 Spring  Security 설정에서 사용하지 위해 Bean 정의
-    *
-    * @author Tizesin(신민준)
-    */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    /**
-    * filterChain의 CORS 설정 값 정의
-    *
-    * @param source JSON 형식의 문자열
-    * @return 반환값 내용
-    * @throws 예외처리
-    * @author Tizesin(신민준)
-    */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));   // (8-1)
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));  // (8-2)
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();   // (8-3)
-        source.registerCorsConfiguration("/**", configuration);      // (8-4)
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-}
 
+
+    public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+            AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
+
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
+            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
+            jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
+
+            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);
+
+
+            builder
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
+        }
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
+    }
+}

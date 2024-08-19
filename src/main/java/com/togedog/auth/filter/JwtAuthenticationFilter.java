@@ -1,9 +1,9 @@
 package com.togedog.auth.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.togedog.auth.dto.LoginDto;
 import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.member.entity.Member;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,17 +26,32 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final JwtTokenizer jwtTokenizer;
 
+    /**
+    * 사용자가 로그인 할 때 실행되는 메서드, 사용자의 email과 비밀번호를 읽어와서 token을 만든 후 사용자가 맞는지 판단.
+    *
+    * @param source JSON 형식의 문자열
+    * @return 사용자가 일치 여부에 따른 메서드 실행 후 반환되는 값
+    * @author Tizesin(신민준)
+    */
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ObjectMapper objectMapper = new ObjectMapper();
         LoginDto loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
         return authenticationManager.authenticate(authenticationToken);
     }
 
+    /**
+    * attemptAuthentication에서 사용자가 맞다고 판단되면 실행되는 메서드
+    *
+    * @param source JSON 형식의 문자열
+    * @return 반환값 내용
+    * @throws 예외처리
+    * @author Tizesin(신민준)
+    */
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
@@ -53,6 +68,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);  // 추가
     }
 
+    /**
+    * AccessToken 생성하는 메서드
+    *
+    * @param member의 정보
+    * @return AccessToken을 만들어서 반환
+    * @author Tizesin(신민준)
+    */
     private String delegateAccessToken(Member member) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("memberId", member.getMemberId());
@@ -69,6 +91,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return accessToken;
     }
 
+    /**
+     * RefreshToken 생성하는 메서드
+     *
+     * @param member의 정보
+     * @return RefreshToken을 만들어서 반환
+     * @author Tizesin(신민준)
+     */
     private String delegateRefreshToken(Member member) {
         String subject = member.getEmail();
         Date expiration = jwtTokenizer.getTokenExpiration(jwtTokenizer.getRefreshTokenExpirationMinutes());
