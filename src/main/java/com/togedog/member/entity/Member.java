@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Member {
+public class Member{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long memberId;
@@ -59,12 +59,12 @@ public class Member {
     @Column(name = "member_status", nullable = false)
     private memberStatus status = memberStatus.RESTRICTION;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PET_ID")
-    private Pet pet;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "member")
+    private List<Pet> pets = new ArrayList<>();
+
     @OneToMany(mappedBy = "member")
     private List<Friend> friends = new ArrayList<>();
 
@@ -73,6 +73,13 @@ public class Member {
 
     @OneToMany(mappedBy = "hostMember")
     private List<Matching> matchings = new ArrayList<>();
+
+    public void addPet(Pet pet) {
+        pets.add(pet);
+        if (pet.getMember() != this) {
+            pet.addMember(this);
+        }
+    }
 
     public void addMatching(Matching matching) {
         matchings.add(matching);

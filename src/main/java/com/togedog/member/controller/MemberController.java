@@ -1,5 +1,6 @@
 package com.togedog.member.controller;
 
+import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
 import com.togedog.friend.service.FriendService;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +25,18 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping("/members")
+@RequestMapping
 @RequiredArgsConstructor
 public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService service;
     private final FriendService friendService;
     private final MemberMapper mapper;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenizer jwtTokenizer;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/sign-up/members")
     public ResponseEntity signUpMember(@Valid @RequestBody MemberDto.Post post) {
         Member member = service.createMember(mapper.memberPostToMember(post));
         URI location = UriCreator.createUri(MEMBER_DEFAULT_URL, member.getMemberId());

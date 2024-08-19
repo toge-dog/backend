@@ -14,7 +14,6 @@ public class PetDto {
     @Getter
     @Setter
     public static class Post {
-        @NotBlank(message = "이름은 공백이 아니어야 합니다.")
         private String petProfileImage;
 
         @NotNull(message = "반려견의 이름을 입력해주세요.")

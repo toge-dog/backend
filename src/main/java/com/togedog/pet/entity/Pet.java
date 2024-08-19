@@ -15,11 +15,18 @@ import java.time.LocalDateTime;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PET_ID")
     private long petId;
 
-    @OneToOne(mappedBy = "pet")
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    public void addMember(Member member) {
+        this.member = member;
+        if (!member.getPets().contains(this)) {
+            member.addPet(this);
+        }
+    }
 
     @Column(name = "pet_name", nullable = false)
     private String petName;

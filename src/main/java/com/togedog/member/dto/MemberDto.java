@@ -38,13 +38,11 @@ public class MemberDto {
                 message = "생년월일 YYYYMMDD 형식으로 입력해 주세요.")
         private String birth;
 
-        @NotNull(message = "주소는 '서울특별시 강남구 테헤란로 12, 101호' 형식으로 입력해주세요.")
         private String mainAddress;
 
-        @NotNull(message = "상세주소는 '00빌라 00호' 형식으로 입력해주세요.")
         private String detailAddress;
 
-        private String profileImage;
+        private String petProfileImage;
     }
 
     @Getter
