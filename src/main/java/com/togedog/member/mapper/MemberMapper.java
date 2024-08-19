@@ -1,9 +1,8 @@
 package com.togedog.member.mapper;
 
 import com.togedog.member.dto.MemberDto;
-import com.togedog.member.member.Member;
+import com.togedog.member.entity.Member;
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

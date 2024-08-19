@@ -2,9 +2,10 @@ package com.togedog.member.controller;
 
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
+import com.togedog.friend.service.FriendService;
 import com.togedog.member.dto.MemberDto;
 import com.togedog.member.mapper.MemberMapper;
-import com.togedog.member.member.Member;
+import com.togedog.member.entity.Member;
 import com.togedog.member.service.MemberService;
 import com.togedog.utils.UriCreator;
 import org.springframework.data.domain.Page;
@@ -24,15 +25,17 @@ import java.util.List;
 public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService service;
+    private final FriendService friendService;
     private final MemberMapper mapper;
 
-    public MemberController(MemberService service, MemberMapper mapper) {
+    public MemberController(MemberService service, FriendService friendService, MemberMapper mapper) {
         this.service = service;
+        this.friendService = friendService;
         this.mapper = mapper;
     }
 
-    @PostMapping
-    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post) {
+    @PostMapping("/sign-up")
+    public ResponseEntity signUpMember(@Valid @RequestBody MemberDto.Post post) {
         Member member = service.createMember(mapper.memberPostToMember(post));
         URI location = UriCreator.createUri(MEMBER_DEFAULT_URL, member.getMemberId());
         return ResponseEntity.created(location).build();
@@ -69,6 +72,29 @@ public class MemberController {
     @DeleteMapping("/{member-id}")
     public ResponseEntity deleteMember(@PathVariable("member-id") @Positive long memberId) {
         service.deleteMember(memberId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{member-email}/friends/{friend-email}")
+    public ResponseEntity addFriend(@PathVariable("member-email") String memberEmail, @PathVariable("friend-email") String friendEmail) {
+        friendService.addFriend(memberEmail, friendEmail);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/accept/{member-email}/{friend-email}")
+    public ResponseEntity acceptFriendRequest(@PathVariable("member-email") String memberEmail,
+                                              @PathVariable("friend-email") String friendEmail) {
+        friendService.acceptFriendRequest(memberEmail, friendEmail);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/reject/{member-email}/{friend-email}")
+    public ResponseEntity rejectFriendRequest(@PathVariable("member-email") String memberEmail,
+                                              @PathVariable("friend-email") String friendEmail) {
+        friendService.rejectFriendRequest(memberEmail, friendEmail);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

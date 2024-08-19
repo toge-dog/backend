@@ -2,7 +2,7 @@ package com.togedog.auth.filter;
 
 import com.togedog.auth.dto.LoginDto;
 import com.togedog.auth.jwt.JwtTokenizer;
-import com.togedog.member.member.Member;
+import com.togedog.member.entity.Member;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

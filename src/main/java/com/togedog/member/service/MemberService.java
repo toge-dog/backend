@@ -3,8 +3,11 @@ package com.togedog.member.service;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
-import com.togedog.member.member.Member;
+import com.togedog.friend.repository.FriendRepository;
+import com.togedog.friend.service.FriendService;
+import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,18 +18,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+     private final FriendService friendService;
+    private final FriendRepository friendRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
 
-    public MemberService(MemberRepository memberRepository,
-                         PasswordEncoder passwordEncoder,
-                         CustomAuthorityUtils authorityUtils) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authorityUtils = authorityUtils;
-    }
+//    public MemberService(MemberRepository memberRepository,
+//                         PasswordEncoder passwordEncoder,
+//                         CustomAuthorityUtils authorityUtils) {
+//        this.memberRepository = memberRepository;
+//        this.passwordEncoder = passwordEncoder;
+//        this.authorityUtils = authorityUtils;
+//        this.friendService = friendService;
+//        this.friendRepository = friendRepository;
+//    }
 
     public Member createMember(Member member) {
         verifyExistMember(member.getEmail());
