@@ -8,8 +8,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface MatchingMapper {
-    Matching matchPostDtoToMatch(MatchingDto.Post post);
-    Matching matchPatchDtoToMatch(MatchingDto.Patch patch);
-    MatchingDto.Response matchToMatchResponseDto(Matching matching);
-    List<MatchingDto.Response> matchToMatchResponsesDto(List<Matching> matchings);
+    Matching matchingPostDtoToMatching(MatchingDto.Post post);
+    Matching matchingPatchDtoToMatching(MatchingDto.Patch patch);
+    MatchingDto.Response matchingToMatchingResponseDto(Matching matching);
+    List<MatchingDto.Response> matchingToMatchingResponsesDto(List<Matching> matchings);
 }

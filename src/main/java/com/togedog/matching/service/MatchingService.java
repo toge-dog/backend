@@ -5,10 +5,12 @@ import com.togedog.exception.ExceptionCode;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matching.repository.MatchingRepository;
 import com.togedog.member.entity.Member;
+import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,19 +22,24 @@ import java.util.Optional;
 @Transactional
 public class MatchingService {
     private final MatchingRepository matchingRepository;
+    private final MemberRepository memberRepository;
     //private final matchStandByRepository matchStandByRepository;
 
-    public Matching createMatch(Matching matching) {
-        findCheckOtherMatchStatusHosting(matching.getHostMember());
-//        changeMatchStandByStatusWaitToReject(match.getMatchId());
+    public Matching createMatch(Matching matching, Authentication authentication) {
+        Member member = extractMemberFromAuthentication(authentication);
+        matching.setHostMember(member);
+        findCheckOtherMatchStatusHosting(member);
         return matchingRepository.save(matching);
     }
 
-    public Matching updateMatch(Matching matching) {
-        Matching findMatching = findVerifiedMatch(matching.getMatchId());
+    public Matching updateMatch(Matching matching,Authentication authentication) {
+        Member member = extractMemberFromAuthentication(authentication);
+        Matching findMatching = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING).orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
         Optional.ofNullable(matching.getMatchStatus())
                 .ifPresent(status -> findMatching.setMatchStatus(status));
-        return matchingRepository.save(matching);
+        Matching result = findMatching;
+        return matchingRepository.save(result);
     }
 
     public Page<Matching> findMatches(int page, int size) {
@@ -48,12 +55,17 @@ public class MatchingService {
         return result;
     }
 
-    //생각이 필요해요
     private void findCheckOtherMatchStatusHosting(Member member) {
-        List<Matching> matchings = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING);
-        if (!matchings.isEmpty()) {
-            throw new BusinessLogicException(ExceptionCode.MATCH_ALREADY_START);
-        }
+        Optional<Matching> findMatch = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING);
+        findMatch.ifPresent(match -> {
+            throw new BusinessLogicException(ExceptionCode.MATCH_ALREADY_EXISTS);
+        });
+    }
+
+    private Member extractMemberFromAuthentication(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 //    private void changeMatchStandByStatusWaitToReject(long memberId) {
 //        List<MatchStandBy> MatchStandBys = matchStandByRepository.findByMatchIdAndHostAnswer(memberId, MatchStandBy.HostAnswer.MATCHSTANDBY_WAIT);

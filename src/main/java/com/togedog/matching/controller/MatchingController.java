@@ -6,12 +6,12 @@ import com.togedog.matching.dto.MatchingDto;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matching.mapper.MatchingMapper;
 import com.togedog.matching.service.MatchingService;
-import com.togedog.member.entity.Member;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,34 +29,23 @@ public class MatchingController {
     private final MatchingMapper mapper;
     private final MatchingService service;
 
-    @PostMapping("/{member-id}")
-    public ResponseEntity postMatch(@PathVariable("member-id") @Positive long memberId,
-                                    @Valid @RequestBody MatchingDto.Post requestBody){
-        Member member = new Member();
-        member.setMemberId(memberId);
-        requestBody.setHostMember(member); //jwt 적용 시 삭제
-        Matching createMatching = service.createMatch(mapper.matchPostDtoToMatch(requestBody));
+    @PostMapping
+    public ResponseEntity postMatch(@Valid @RequestBody MatchingDto.Post requestBody,
+                                    Authentication authentication) {
+        Matching createMatching = service.createMatch(mapper.matchingPostDtoToMatching(requestBody),authentication);
         URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchId());
         return ResponseEntity.created(location).build();
     }
-//    @PostMapping
-//    public ResponseEntity postMatch(@Valid @RequestBody MatchDto.Post requestBody) {
-//        Match createMatch = matchService.createMatch(matchMapper.matchPostDtoToMember(requestBody));
-//        URI location = UriCreator.createUri(MATCH_DEFAULT_URL,createMatch.getMatchId());
-//        return ResponseEntity.created(location).build();
-//    }
 
-    @PatchMapping("/{member-id}")
-    public ResponseEntity patchMember(@PathVariable("member-id") @Positive long memberId,
-                                      @Valid @RequestBody MatchingDto.Patch requestBody) {
-        Member member = new Member();
-        member.setMemberId(memberId);
-        requestBody.setHostMember(member); //jwt 적용 시 삭제
+    @PatchMapping
+    public ResponseEntity patchMember(@Valid @RequestBody MatchingDto.Patch requestBody,
+                                      Authentication authentication) {
         Matching updateMatching =
-                service.updateMatch(mapper.matchPatchDtoToMatch(requestBody));
-        return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.matchToMatchResponseDto(updateMatching)),
-                HttpStatus.OK);
+                service.updateMatch(mapper.matchingPatchDtoToMatching(requestBody),authentication);
+        return new ResponseEntity<>(HttpStatus.OK);
+//        return new ResponseEntity<>(
+//                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(updateMatching)),
+//                HttpStatus.OK);
     }
 
 
@@ -65,7 +54,7 @@ public class MatchingController {
                                       @Positive long matchId) {
         Matching findMatching = service.findVerifiedMatch(matchId);
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.matchToMatchResponseDto(findMatching)),
+                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(findMatching)),
                 HttpStatus.OK);
     }
 
@@ -76,7 +65,7 @@ public class MatchingController {
         List<Matching> matchings = pageMatches.getContent();
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.matchToMatchResponsesDto(matchings), pageMatches),
+                new MultiResponseDto<>(mapper.matchingToMatchingResponsesDto(matchings), pageMatches),
                 HttpStatus.OK);
     }
 }
