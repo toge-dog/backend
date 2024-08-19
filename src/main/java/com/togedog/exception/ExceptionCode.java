@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum ExceptionCode {
     //match 관련
     MATCH_NOT_FOUND(404,"MATCH_NOT_FOUND"),
-    MATCH_ALREADY_START(409,"MATCH_ALREADY_START"),
+    MATCH_ALREADY_EXISTS(409,"MATCH_ALREADY_EXISTS"),
 
     //board 관련
     BOARD_NOT_FOUND(404,"Board Not Found"),
