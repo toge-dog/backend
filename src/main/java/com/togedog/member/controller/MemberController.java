@@ -8,6 +8,7 @@ import com.togedog.member.mapper.MemberMapper;
 import com.togedog.member.entity.Member;
 import com.togedog.member.service.MemberService;
 import com.togedog.utils.UriCreator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +23,12 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("/members")
+@RequiredArgsConstructor
 public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService service;
     private final FriendService friendService;
     private final MemberMapper mapper;
-
-    public MemberController(MemberService service, FriendService friendService, MemberMapper mapper) {
-        this.service = service;
-        this.friendService = friendService;
-        this.mapper = mapper;
-    }
 
     @PostMapping("/sign-up")
     public ResponseEntity signUpMember(@Valid @RequestBody MemberDto.Post post) {

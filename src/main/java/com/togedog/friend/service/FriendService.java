@@ -6,6 +6,7 @@ import com.togedog.friend.entity.Friend;
 import com.togedog.friend.repository.FriendRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,14 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class FriendService {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
-
-    public FriendService(FriendRepository friendRepository, MemberRepository memberRepository) {
-        this.friendRepository = friendRepository;
-        this.memberRepository = memberRepository;
-    }
 
     public Friend getFriend(String memberEmail, String friendEmail) {
         Member member = memberRepository.findByEmail(memberEmail)
