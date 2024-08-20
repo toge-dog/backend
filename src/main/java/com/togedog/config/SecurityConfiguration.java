@@ -8,6 +8,7 @@ import com.togedog.auth.handler.MemberAuthenticationFailureHandler;
 import com.togedog.auth.handler.MemberAuthenticationSuccessHandler;
 import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.auth.utils.CustomAuthorityUtils;
+import com.togedog.member.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,11 +36,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils; // 추가
+    private final MemberRepository memberRepository; // 추가
 
     public SecurityConfiguration(JwtTokenizer jwtTokenizer,
-                                 CustomAuthorityUtils authorityUtils) {
+                                 CustomAuthorityUtils authorityUtils, MemberRepository memberRepository) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
+        this.memberRepository = memberRepository;
     }
 
     @Bean
@@ -125,8 +128,8 @@ public class SecurityConfiguration {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
-            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
-            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
+            jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler(memberRepository));
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);

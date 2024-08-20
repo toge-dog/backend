@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "friend", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_id", "member_friend_id"})
+        @UniqueConstraint(columnNames = {"requester_email", "recipient_email"})
 })
 @Getter
 @Setter
@@ -20,12 +20,12 @@ public class Friend {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long friendId;
 
-    @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "requester_email")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "MEMBER_FRIEND_ID")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "recipient_email")
     private Member friend;
 
     public void setMember(Member member) {
@@ -57,5 +57,4 @@ public class Friend {
             this.status = status;
         }
     }
-
 }

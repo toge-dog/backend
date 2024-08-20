@@ -29,7 +29,10 @@ public enum ExceptionCode {
 
     //Pet 관련
     PET_NOT_FOUND(404, "Pet Not Found"),
-    PET_EXISTS(409,"Pet exists");
+    PET_EXISTS(409,"Pet exists"),
+
+    //친구 요청 관련
+    UNAUTHORIZED_ACCESS(404, "친구요청을 없습니다.");
 
     @Getter
     private int statusCode;

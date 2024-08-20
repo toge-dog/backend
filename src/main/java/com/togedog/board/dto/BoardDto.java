@@ -6,36 +6,36 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class BoardDto{
+    @Setter
+    @NoArgsConstructor
     @Getter
     @AllArgsConstructor
     public static class Post {
-        public Board.BoardType getBoardType;
+//        public Board.BoardType getBoardType;
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9 .,?!-]{4,20}$",
-                message = "제목은 4자에서 20자까지 쓸 수 있으며, .,?!-를 제외한 특수문자는 쓸 수 없습니다.")
+        @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s]+$", message = "제목은 영문자,숫자,공백,한글만 허용됩니다")
         private String title;
 
         @NotBlank
-        @Pattern(regexp = "^[\\w\\s.,!?@#%&*()\\-+=:;\"'<>\\[\\]{}|/~`\\n]{10,3000}$",
-                message = "최소10자에서 3000자까지 쓸 수 있습니다.")
+        @Size(min = 1, max = 5000, message = "1자에서 5000자 이내로 작성 가능합니다")
         private String content;
 
         @Pattern(regexp = "^(https?:\\/\\/)?([\\w\\d-]+\\.)+[\\w\\d-]+(\\/[\\w\\d\\-._~:?#\\[\\]@!$&'()*+,;=]*)?\\.(jpg|jpeg|png|gif|bmp|webp)$",
                 message = "Content image 필드는 jpg, jpeg, png, gif, bmp, webp 중 하나의 확장자를 가진 유효한 이미지 URL이어야 합니다.")
         private String contentImg;
 
-        private Board.BoardType boardType;
+//        private Board.BoardType boardType;
 
-        @NotBlank
-        private Member member;
+        private long memberId;
     }
 
     @Getter
     @Setter
     public static class Patch {
-
+        @NotBlank
         private long boardId;
 
         @NotBlank
@@ -46,8 +46,8 @@ public class BoardDto{
 
         private String contentImg;
 
-        @NotBlank
-        private Board.BoardType boardType;
+//        @NotBlank
+//        private Board.BoardType boardType;
 
     }
 
@@ -60,7 +60,7 @@ public class BoardDto{
         private String title;
         private String content;
         private String contentImg;
-        private String boardType;
+//        private String boardType;
 
     }
 }
