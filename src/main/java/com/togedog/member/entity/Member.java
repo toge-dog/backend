@@ -1,5 +1,6 @@
 package com.togedog.member.entity;
 
+import com.togedog.board.entity.Board;
 import com.togedog.friend.entity.Friend;
 import com.togedog.matching.entity.Matching;
 import com.togedog.pet.entity.Pet;
@@ -16,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Member {
+public class Member{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long memberId;
@@ -59,12 +60,12 @@ public class Member {
     @Column(name = "member_status", nullable = false)
     private memberStatus status = memberStatus.RESTRICTION;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PET_ID")
-    private Pet pet;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Pet> pets = new ArrayList<>();
+
     @OneToMany(mappedBy = "member")
     private List<Friend> friends = new ArrayList<>();
 
@@ -73,6 +74,13 @@ public class Member {
 
     @OneToMany(mappedBy = "hostMember")
     private List<Matching> matchings = new ArrayList<>();
+
+    public void addPet(Pet pet) {
+        pets.add(pet);
+        if (pet.getMember() != this) {
+            pet.setMember(this);
+        }
+    }
 
     public void addMatching(Matching matching) {
         matchings.add(matching);
@@ -95,8 +103,18 @@ public class Member {
         }
     }
 
-     @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Board> boards = new ArrayList<>();
+
+    public void setBoard(Board board) {
+        this.boards.add(board);
+        if(board.getMember() != this) {
+            board.setMember(this);
+        }
+    }
 
     public enum memberGender {
         M("남성"),
@@ -111,10 +129,10 @@ public class Member {
     }
 
     public enum memberStatus {
-        NO_RESTRICTION("활성 상태"),
-        RESTRICTION("비활성 상태"),
-        DELETED("탈퇴 상태");
-
+        LOGGED_IN("온라인"),
+        LOGGED_OUT("오프라인"),
+        RESTRICTION("비활성"),
+        DELETED("탈퇴");
 
         @Getter
         private String status;

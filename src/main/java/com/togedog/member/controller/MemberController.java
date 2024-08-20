@@ -1,5 +1,6 @@
 package com.togedog.member.controller;
 
+import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
 import com.togedog.friend.service.FriendService;
@@ -7,11 +8,17 @@ import com.togedog.member.dto.MemberDto;
 import com.togedog.member.mapper.MemberMapper;
 import com.togedog.member.entity.Member;
 import com.togedog.member.service.MemberService;
+import com.togedog.pet.entity.Pet;
+import com.togedog.pet.mapper.PetMapper;
+import com.togedog.pet.service.PetService;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,67 +29,71 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping("/members")
+@RequestMapping
 @RequiredArgsConstructor
 public class MemberController {
     private final static String MEMBER_DEFAULT_URL = "/members";
     private final MemberService service;
     private final FriendService friendService;
-    private final MemberMapper mapper;
+    private final MemberMapper memberMapper;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/sign-up/members")
     public ResponseEntity signUpMember(@Valid @RequestBody MemberDto.Post post) {
-        Member member = service.createMember(mapper.memberPostToMember(post));
+        Member member = service.createMember(memberMapper.memberPostToMember(post));
         URI location = UriCreator.createUri(MEMBER_DEFAULT_URL, member.getMemberId());
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/{member-id}")
-    public ResponseEntity getMember(@PathVariable("member-id") @Positive long memberId) {
-        Member member = service.findMember(memberId);
+    @GetMapping("member")
+    public ResponseEntity getMember(Authentication authentication) {
+        Member member = service.findMember(authentication);
 
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.memberToResponseDto(member)), HttpStatus.OK);
+                new SingleResponseDto<>(memberMapper.memberToResponseDto(member)), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity getMembers(@RequestParam @Positive int page,
-                                     @RequestParam @Positive int size) {
-        Page<Member> pageMembers = service.findMembers(page -1, size);
+                                     @RequestParam @Positive int size,
+                                     Authentication authentication) {
+        Page<Member> pageMembers = service.findMembers(page -1, size, authentication);
         List<Member> members = pageMembers.getContent();
 
         return new ResponseEntity(
-                new MultiResponseDto<>(mapper.membersToResponseDto(members), pageMembers), HttpStatus.OK);
+                new MultiResponseDto<>(memberMapper.membersToResponseDto(members), pageMembers), HttpStatus.OK);
     }
 
-    @PatchMapping("/{member-id}")
-    public ResponseEntity patchMember(@PathVariable("member-id") @Positive long memberId,
+    @PatchMapping
+    public ResponseEntity patchMember(Authentication authentication,
                                       @Valid @RequestBody MemberDto.Patch patch) {
-        patch.setMemberId(memberId);
-        Member member = service.updateMember(mapper.memberPatchToMember(patch));
+        Member member = service.updateMember(memberMapper.memberPatchToMember(patch),authentication);
 
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.memberToResponseDto(member)), HttpStatus.OK);
+                new SingleResponseDto<>(memberMapper.memberToResponseDto(member)), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{member-id}")
-    public ResponseEntity deleteMember(@PathVariable("member-id") @Positive long memberId) {
-        service.deleteMember(memberId);
+    @DeleteMapping
+    public ResponseEntity deleteMember(Authentication authentication) {
+        service.deleteMember(authentication);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{member-email}/friends/{friend-email}")
-    public ResponseEntity addFriend(@PathVariable("member-email") String memberEmail, @PathVariable("friend-email") String friendEmail) {
-        friendService.addFriend(memberEmail, friendEmail);
+    @PostMapping("/friends/{friend-email}")
+    public ResponseEntity addFriend(@PathVariable("friend-email") String toEmail,
+                                    Authentication authentication) {
+        String fromEmail = authentication.getName();
+
+        friendService.addFriend(fromEmail, toEmail);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/accept/{member-email}/{friend-email}")
-    public ResponseEntity acceptFriendRequest(@PathVariable("member-email") String memberEmail,
-                                              @PathVariable("friend-email") String friendEmail) {
-        friendService.acceptFriendRequest(memberEmail, friendEmail);
+    @PostMapping("/accept/{friend-id}")
+    public ResponseEntity acceptFriendRequest(@PathVariable("friend-id") @Positive long friendId,
+                                              Authentication authentication) {
+
+        friendService.acceptFriendRequest(friendId, authentication);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -94,6 +105,4 @@ public class MemberController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 }
