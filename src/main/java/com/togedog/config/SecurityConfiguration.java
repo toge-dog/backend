@@ -2,6 +2,8 @@ package com.togedog.config;
 
 import com.togedog.auth.filter.JwtAuthenticationFilter;
 import com.togedog.auth.filter.JwtVerificationFilter;
+import com.togedog.auth.handler.MemberAccessDeniedHandler;
+import com.togedog.auth.handler.MemberAuthenticationEntryPoint;
 import com.togedog.auth.handler.MemberAuthenticationFailureHandler;
 import com.togedog.auth.handler.MemberAuthenticationSuccessHandler;
 import com.togedog.auth.jwt.JwtTokenizer;
@@ -52,8 +54,8 @@ public class SecurityConfiguration {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .exceptionHandling()
-//                .authenticationEntryPoint(new MemberAuthenticationEntryPoint())  // 추가
-//                .accessDeniedHandler(new MemberAccessDeniedHandler())            // 추가
+                .authenticationEntryPoint(new MemberAuthenticationEntryPoint())  // 추가
+                .accessDeniedHandler(new MemberAccessDeniedHandler())            // 추가
                 .and()
                 .apply(new CustomFilterConfigurer())   // (1)
                 .and()
@@ -110,6 +112,7 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
