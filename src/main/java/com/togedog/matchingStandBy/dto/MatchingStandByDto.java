@@ -13,16 +13,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class MatchingStandByDto {
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    public static class Post {
-//        @NotBlank
-//        private Matching matching;
-//        @NotBlank
-//        private Member guestMember;
-    }
-
     @Getter
     @Setter
     public static class Patch {
