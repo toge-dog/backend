@@ -13,10 +13,10 @@ public interface BoardMapper {
     default Board boardDtoPostToBoard(BoardDto.Post requestBody){
         Member member = new Member();
         Board board = new Board();
-        member = requestBody.getMember();
+        member.setMemberId(requestBody.getMemberId());
         board.setTitle(requestBody.getTitle());
         board.setContent(requestBody.getContent());
-//        board.setContent(requestBody.getContentImg());
+        board.setContentImg(requestBody.getContentImg());
 //        board.setBoardType(requestBody.getBoardType);
         board.setMember(member);
         return board;
