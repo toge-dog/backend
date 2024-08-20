@@ -7,10 +7,13 @@ import com.togedog.pet.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import java.util.List;
 
 @RestController
 @RequestMapping
@@ -20,10 +23,10 @@ public class PetController {
     private final PetMapper petMapper;
     private final PetService petService;
 
-    @PostMapping("sign-up/pets")
-    public ResponseEntity signUpPet(@Valid @RequestBody PetDto.Post post) {
-        petService.createPet(petMapper.postToPet(post));
+    @GetMapping("my-pet")
+    public ResponseEntity getPets(Authentication authentication) {
+        List<Pet> pets = petService.findPet(authentication);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(petMapper.petsToResponse(pets), HttpStatus.OK);
     }
 }

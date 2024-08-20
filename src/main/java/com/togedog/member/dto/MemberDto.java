@@ -1,10 +1,13 @@
 package com.togedog.member.dto;
 
+import com.togedog.pet.dto.PetDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MemberDto {
     @Getter
@@ -43,6 +46,8 @@ public class MemberDto {
         private String detailAddress;
 
         private String petProfileImage;
+
+        private List<PetDto.Post> pets = new ArrayList<>();
     }
 
     @Getter

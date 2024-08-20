@@ -21,7 +21,7 @@ public class Pet {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    public void addMember(Member member) {
+    public void setMember(Member member) {
         this.member = member;
         if (!member.getPets().contains(this)) {
             member.addPet(this);
