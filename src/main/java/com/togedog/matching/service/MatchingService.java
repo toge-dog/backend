@@ -68,11 +68,11 @@ public class MatchingService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 //    private void changeMatchStandByStatusWaitToReject(long memberId) {
-//        List<MatchStandBy> MatchStandBys = matchStandByRepository.findByMatchIdAndHostAnswer(memberId, MatchStandBy.HostAnswer.MATCHSTANDBY_WAIT);
+//        List<MatchStandBy> MatchStandBys = matchStandByRepository.findByMatchIdAndStatus(memberId, MatchStandBy.Status.MATCHSTANDBY_WAIT);
 //
 //        for (MatchStandBy matchStandBy : matchStandBys) {
-//            if (matchStandBy.getHostAnswer().equals(MatchStandBy.HostAnswer.MATCHSTANDBY_WAIT)) {
-//                matchStandBy.setHostAnswer(MatchStandBy.HostAnswer.MATCHSTANDBY_REJECT);
+//            if (matchStandBy.getStatus().equals(MatchStandBy.Status.MATCHSTANDBY_WAIT)) {
+//                matchStandBy.setStatus(MatchStandBy.Status.MATCHSTANDBY_REJECT);
 //                //이후 알람 보내야함
 //            }
 //        }

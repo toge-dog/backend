@@ -5,6 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum ExceptionCode {
+
+    //추가해야할 에러 코드
+    NOT_MATCH_HOST_MEMBER(404,"NOT_MATCH_HOST_MEMBER"),
+    ACCESS_DENIED(403,"ACCESS_DENIED"),
+
     //match 관련
     MATCH_NOT_FOUND(404,"MATCH_NOT_FOUND"),
     MATCH_ALREADY_EXISTS(409,"MATCH_ALREADY_EXISTS"),

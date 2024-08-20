@@ -3,6 +3,7 @@ package com.togedog.member.entity;
 import com.togedog.board.entity.Board;
 import com.togedog.friend.entity.Friend;
 import com.togedog.matching.entity.Matching;
+import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -74,6 +75,16 @@ public class Member{
 
     @OneToMany(mappedBy = "hostMember")
     private List<Matching> matchings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guestMember")
+    private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
+
+    public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
+        matchingStandBys.add(matchingStandBy);
+        if (matchingStandBy.getGuestMember() != this) {
+            matchingStandBy.addMember(this);
+        }
+    }
 
     public void addPet(Pet pet) {
         pets.add(pet);
