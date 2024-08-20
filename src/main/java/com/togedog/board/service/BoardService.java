@@ -35,8 +35,8 @@ public class BoardService {
     public Board patchBoard(Board board){
         Optional<Board> findBoard =
                 boardRepository.findById(board.getBoardId());
-        Optional.ofNullable(board.getBoardType())
-                .ifPresent(boardType -> board.setBoardType(boardType));
+//        Optional.ofNullable(board.getBoardType())
+//                .ifPresent(boardType -> board.setBoardType(boardType));
         Optional.ofNullable(board.getContent())
                 .ifPresent(content -> board.setContent(content));
         Optional.ofNullable(board.getTitle())
