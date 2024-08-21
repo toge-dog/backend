@@ -1,18 +1,21 @@
 package com.togedog.matchingStandBy.dto;
 
-import com.togedog.matching.entity.Matching;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
-import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class MatchingStandByDto {
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    public static class Post{
+
+    }
     @Getter
     @Setter
     public static class Patch {
