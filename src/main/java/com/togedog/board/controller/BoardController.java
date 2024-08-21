@@ -42,6 +42,18 @@ public class BoardController {
         return ResponseEntity.created(location).build();
     }
 
+    @GetMapping("/{board-Id}")
+    public ResponseEntity getBoard(@PathVariable("board-Id")
+                                   @Positive long boardId) {
+        Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
+        if (findBoard.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
+            return new ResponseEntity<>(new SingleResponseDto<>(null), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
+                HttpStatus.OK);
+    }
+
     @PatchMapping("/{board-Id}")
     public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId
             , @Valid @RequestBody BoardDto.Patch requestBody){
@@ -52,16 +64,7 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/{board-Id}")
-    public ResponseEntity getBoard(@PathVariable("board-Id")
-                                   @Positive long boardId) {
-        Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
-        return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
-                HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{board-Id}")
+    @DeleteMapping ("/{board-Id}")
     public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId) {
         service.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -77,10 +80,4 @@ public class BoardController {
                 new MultiResponseDto<>(mapper.boardToBoardDtoResponses(boards),pageBoards),
                 HttpStatus.OK);
     }
-
-//    @PostMapping("/boardId/likes")
-//    public ResponseEntity postLike(@RequestBody @Valid LikesDto.Post requestBody) {
-//        service.switchLike(LikesMapper.likesPostDtoToLikes(requestBody));
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
 }

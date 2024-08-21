@@ -1,7 +1,6 @@
 package com.togedog.likes.mapper;
 
 import com.togedog.board.entity.Board;
-import com.togedog.board.entity.BoardBoast;
 import com.togedog.likes.dto.LikesDto;
 import com.togedog.likes.entity.Likes;
 import com.togedog.member.entity.Member;

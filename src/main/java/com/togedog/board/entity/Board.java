@@ -40,22 +40,23 @@ public class Board extends Auditable {
     private List<Likes> likes = new ArrayList<>();
 
     @Column
-    private int likesCnt = 0;
+    private int likesCount;
 
-//    @Column
-//    @Enumerated(value = EnumType.STRING)
-//    private BoardType boardType = BoardType.BOAST;
-//
-//    @AllArgsConstructor
-//    public enum BoardType {
-//        REPORT("신고 게시판"),
-//        INQUIRY("문의 게시판"),
-//        REVIEW("후기 게시판"),
-//        BOAST("자랑 게시판"),
-//        NOTICE("공지 게시판");
-//
-//        @Getter
-//        private String boardDescription;
-//
-//    }
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private BoardStatus boardStatus = BoardStatus.BOARD_POST;
+
+
+    @AllArgsConstructor
+    public enum BoardStatus{
+        BOARD_POST("게시글 게시 상태"),
+        BOARD_DELETED("게시글 삭제 상태");
+
+        @Getter
+        private String statusDescription;
+    }
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private BoardType boardType = BoardType.BOAST;
+
 }

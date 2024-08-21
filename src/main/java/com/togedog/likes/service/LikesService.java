@@ -31,15 +31,16 @@ public class LikesService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
 
         Optional<Likes> existingLikes = likesRepository.findByMemberAndBoard(member, board);
+        //해당 멤버가 해당 게시물에 이미 좋아요 눌렀는지 확인
         if (existingLikes.isPresent()){
             likesRepository.delete(existingLikes.get());
-            board.setLikesCnt(board.getLikesCnt()-1);
+            board.setLikesCount(board.getLikesCount()-1); // 좋아요 존재하면 좋아요 삭제, 좋아요수-1
         } else {
             Likes likes = new Likes();
             likes.setMember(member);
             likes.setBoard(board);
             likesRepository.save(likes);
-            board.setLikesCnt(board.getLikesCnt()+1);
+            board.setLikesCount(board.getLikesCount()+1);// 존재하지 않으면 새로운 좋아요 생성,저장, 좋아요수+1
         }
 
         boardRepository.save(board);
