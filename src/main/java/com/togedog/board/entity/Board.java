@@ -6,8 +6,10 @@ import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -35,7 +37,11 @@ public class Board extends Auditable {
     private Member member;
 
     @OneToMany(mappedBy = "board")
-    private List<Likes> likes;
+    private List<Likes> likes = new ArrayList<>();
+
+    @Column
+    private int likesCnt = 0;
+
 //    @Column
 //    @Enumerated(value = EnumType.STRING)
 //    private BoardType boardType = BoardType.BOAST;

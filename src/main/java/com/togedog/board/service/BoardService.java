@@ -4,6 +4,10 @@ import com.togedog.board.entity.Board;
 import com.togedog.board.repository.BoardRepository;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
+import com.togedog.likes.dto.LikesDto;
+import com.togedog.likes.entity.Likes;
+import com.togedog.likes.repository.LikesRepository;
+import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +27,7 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final LikesRepository likesRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -67,5 +72,20 @@ public class BoardService {
         return boardRepository.findAll(PageRequest.of(page,size, Sort.by("boardId").descending()));
     }
 
+    public void switchLike(Likes likes){
+        Board board = findVerifiedBoard(likes.getBoard().getBoardId());
+        Member member = memberRepository.findById(likes.getMember().getMemberId())
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        if (likesRepository.findByMember(member).isPresent()) {
+            likesRepository.delete(likes);
+            board.setLikesCnt(board.getLikesCnt()-1);
+        } else {
+            likesRepository.save(likes);
+            board.setLikesCnt(board.getLikesCnt()+1);
+        }
+        entityManager.flush();
+        boardRepository.save(board);
+        entityManager.clear();
+    }
 
 }

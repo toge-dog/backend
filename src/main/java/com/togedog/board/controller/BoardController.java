@@ -6,6 +6,8 @@ import com.togedog.board.mapper.BoardMapper;
 import com.togedog.board.service.BoardService;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
+import com.togedog.likes.dto.LikesDto;
+import com.togedog.likes.mapper.LikesMapper;
 import com.togedog.member.entity.Member;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
@@ -75,4 +77,10 @@ public class BoardController {
                 new MultiResponseDto<>(mapper.boardToBoardDtoResponses(boards),pageBoards),
                 HttpStatus.OK);
     }
+
+//    @PostMapping("/boardId/likes")
+//    public ResponseEntity postLike(@RequestBody @Valid LikesDto.Post requestBody) {
+//        service.switchLike(LikesMapper.likesPostDtoToLikes(requestBody));
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
 }

@@ -61,6 +61,7 @@ public class BoardDto{
         private String content;
         private String contentImg;
 //        private String boardType;
+        private int likeCnt;
 
     }
 }
