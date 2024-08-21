@@ -6,6 +6,8 @@ import com.togedog.board.mapper.BoardMapper;
 import com.togedog.board.service.BoardService;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
+import com.togedog.likes.dto.LikesDto;
+import com.togedog.likes.mapper.LikesMapper;
 import com.togedog.member.entity.Member;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,18 @@ public class BoardController {
         return ResponseEntity.created(location).build();
     }
 
+    @GetMapping("/{board-Id}")
+    public ResponseEntity getBoard(@PathVariable("board-Id")
+                                   @Positive long boardId) {
+        Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
+        if (findBoard.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
+            return new ResponseEntity<>(new SingleResponseDto<>(null), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
+                HttpStatus.OK);
+    }
+
     @PatchMapping("/{board-Id}")
     public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId
             , @Valid @RequestBody BoardDto.Patch requestBody){
@@ -50,16 +64,7 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/{board-Id}")
-    public ResponseEntity getBoard(@PathVariable("board-Id")
-                                   @Positive long boardId) {
-        Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
-        return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
-                HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{board-Id}")
+    @DeleteMapping ("/{board-Id}")
     public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId) {
         service.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
