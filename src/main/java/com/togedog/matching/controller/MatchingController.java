@@ -21,16 +21,16 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/matching")
+@RequestMapping("/matchings")
 @Validated
 @RequiredArgsConstructor
 public class MatchingController {
-    private final static String MATCH_DEFAULT_URL = "/matching";
+    private final static String MATCH_DEFAULT_URL = "/matchings";
     private final MatchingMapper mapper;
     private final MatchingService service;
 
     @PostMapping
-    public ResponseEntity postMatch(@Valid @RequestBody MatchingDto.Post requestBody,
+    public ResponseEntity postMatching(@Valid @RequestBody MatchingDto.Post requestBody,
                                     Authentication authentication) {
         Matching createMatching = service.createMatch(mapper.matchingPostDtoToMatching(requestBody),authentication);
         URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchId());
@@ -42,15 +42,15 @@ public class MatchingController {
                                       Authentication authentication) {
         Matching updateMatching =
                 service.updateMatch(mapper.matchingPatchDtoToMatching(requestBody),authentication);
-        return new ResponseEntity<>(HttpStatus.OK);
-//        return new ResponseEntity<>(
-//                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(updateMatching)),
-//                HttpStatus.OK);
+//        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(updateMatching)),
+                HttpStatus.OK);
     }
 
 
     @GetMapping("/{match-id}")
-    public ResponseEntity getMatch(@PathVariable("match-Id")
+    public ResponseEntity getMatching(@PathVariable("match-Id")
                                       @Positive long matchId) {
         Matching findMatching = service.findVerifiedMatch(matchId);
         return new ResponseEntity<>(
@@ -59,7 +59,7 @@ public class MatchingController {
     }
 
     @GetMapping
-    public ResponseEntity getMatches(@Positive @RequestParam int page,
+    public ResponseEntity getMatchings(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size){
         Page<Matching> pageMatches = service.findMatches(page - 1, size);
         List<Matching> matchings = pageMatches.getContent();

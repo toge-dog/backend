@@ -39,6 +39,6 @@ public class MatchingDto {
         private double latitude;
         private double longitude;
         private Matching.MatchStatus matchStatus;
-        private Member hostMember;
+        private long hostMemberId;
     }
 }
