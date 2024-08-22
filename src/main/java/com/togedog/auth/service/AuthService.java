@@ -1,6 +1,10 @@
 package com.togedog.auth.service;
 
 import com.togedog.auth.jwt.JwtTokenizer;
+import com.togedog.exception.BusinessLogicException;
+import com.togedog.exception.ExceptionCode;
+import com.togedog.member.entity.Member;
+import com.togedog.member.repository.MemberRepository;
 import com.togedog.redis.tool.RedisTool;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
-    private final RedisTool redisTool;
     private final JwtTokenizer jwtTokenizer;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final MemberRepository memberRepository;
 
     /**
      * 사용자를 로그아웃 처리하는 메서드
@@ -25,7 +29,16 @@ public class AuthService {
      * @return 로그아웃이 성공하면 true, 실패하면 false를 반환
      */
     public boolean logout(String username) {
-        return jwtTokenizer.deleteRegisterToken(username);
+        boolean tokenDeleted = jwtTokenizer.deleteRegisterToken(username);
+
+        Member member = memberRepository.findByEmail(username)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        member.setStatus(Member.memberStatus.LOGGED_OUT);
+        memberRepository.save(member);
+
+        return tokenDeleted;
+//        return jwtTokenizer.deleteRegisterToken(username);
     }
 
     public boolean isTokenValid(String userName) {
