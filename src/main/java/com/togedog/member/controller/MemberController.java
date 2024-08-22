@@ -44,7 +44,7 @@ public class MemberController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("member")
+    @GetMapping("/member")
     public ResponseEntity getMember(Authentication authentication) {
         Member member = service.findMember(authentication);
 
