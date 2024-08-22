@@ -6,6 +6,7 @@ import com.togedog.member.entity.Member;
 import org.mapstruct.Mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring")
@@ -35,6 +36,19 @@ public interface BoardMapper {
 
     Board boardDtoPatchToBoard(BoardDto.Patch requestBody);
     BoardDto.Response boardToBoardDtoResponse(Board board);
-    List<BoardDto.Response> boardToBoardDtoResponses(List<Board> boards);
+    default List<BoardDto.Response> boardToBoardDtoResponses(List<Board> boards) {
+        return boards
+                .stream()
+                .filter(status -> !status.getBoardStatus().equals(Board.BoardStatus.BOARD_DELETED))
+                .map(board -> BoardDto.Response
+                        .builder()
+                        .title(board.getTitle())
+                        .content(board.getContent())
+                        .boardType(board.getBoardType().getBoardDescription())
+                        .boardStatus(board.getBoardStatus().getStatusDescription())
+                        .viewCount(board.getViewCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 }

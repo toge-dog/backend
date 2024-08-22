@@ -32,7 +32,7 @@ public class Board extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String contentImg;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
@@ -41,6 +41,9 @@ public class Board extends Auditable {
 
     @Column
     private int likesCount;
+
+    @Column
+    private int viewCount;
 
     @Column
     @Enumerated(value = EnumType.STRING)

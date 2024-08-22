@@ -10,13 +10,14 @@ import com.togedog.likes.repository.LikesRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+
 import javax.persistence.PersistenceContext;
 
 import java.util.Optional;
@@ -29,9 +30,10 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final LikesRepository likesRepository;
 
-    public Board createBoard(Board board){
-        Board savedBoard = boardRepository.save(board);
-        return savedBoard;
+    public Board createBoard(Board board, Authentication authentication){
+        Member member = extractMemberFromAuthentication(authentication);
+        board.setMember(member);
+        return boardRepository.save(board);
     }
 
     public Board patchBoard(Board board){
@@ -52,6 +54,13 @@ public class BoardService {
         if (board.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
             throw new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND);
         }
+        int viewCount = board.getViewCount();
+        viewCount++;
+        board.setViewCount(viewCount);
+        boardRepository.save(board);
+        board = boardRepository.findById(board.getBoardId()).orElseThrow((
+                () -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND)
+        ));
         return board;
     }
 
@@ -88,4 +97,12 @@ public class BoardService {
         boardRepository.save(board);
     }
 
+    private Member extractMemberFromAuthentication(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        String email = (String) authentication.getPrincipal();
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
 }

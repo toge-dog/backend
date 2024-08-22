@@ -2,6 +2,7 @@ package com.togedog.board.controller;
 
 import com.togedog.board.dto.BoardDto;
 import com.togedog.board.entity.Board;
+import com.togedog.board.entity.BoardType;
 import com.togedog.board.mapper.BoardMapper;
 import com.togedog.board.service.BoardService;
 import com.togedog.dto.MultiResponseDto;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +33,13 @@ public class BoardController {
     private final BoardMapper mapper;
     private final BoardService service;
 
-    @PostMapping
-    public ResponseEntity postBoard(@Valid @RequestBody
-                                    BoardDto.Post requestBody){
+    @PostMapping("/{board-Type}")
+    public ResponseEntity postBoard(@PathVariable("board-Type") BoardType boardType,
+                                    @Valid @RequestBody BoardDto.Post requestBody,
+                                    Authentication authentication){
+        requestBody.setBoardType(boardType);
         Board createBoard =
-                service.createBoard(mapper.boardDtoPostToBoard(requestBody));
+                service.createBoard(mapper.boardDtoPostToBoard(requestBody),authentication);
 
         URI location = UriCreator.createUri(BOARD_DEF_URL, createBoard.getBoardId());
 

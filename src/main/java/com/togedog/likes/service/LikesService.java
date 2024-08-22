@@ -10,6 +10,7 @@ import com.togedog.likes.repository.LikesRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +25,19 @@ public class LikesService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void toggleLikes(Long memberId, Long boardId){
+    public void toggleLikes(Long memberId, Long boardId,Authentication authentication){
+        //멤버가 존재하는지 확인
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        //인증된 사용자가 memberId와 일치하는지 확인
+        String email = (String) authentication.getPrincipal();
+        Member authenticatedMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.UNAUTHORIZED_ACCESS));
+
+        if (!(authenticatedMember.getMemberId() == memberId)){
+            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_ACCESS);
+        }
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
 
