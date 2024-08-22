@@ -63,5 +63,6 @@ public class BoardDto{
         private String boardType;
         private String boardStatus;
         private int likesCount;
+        private int viewCount;
     }
 }
