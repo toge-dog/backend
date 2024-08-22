@@ -1,7 +1,7 @@
 package com.togedog.board.mapper;
 
 import com.togedog.board.dto.BoardDto;
-import com.togedog.board.entity.Board;
+import com.togedog.board.entity.*;
 import com.togedog.member.entity.Member;
 import org.mapstruct.Mapper;
 
@@ -12,12 +12,23 @@ import java.util.List;
 public interface BoardMapper {
     default Board boardDtoPostToBoard(BoardDto.Post requestBody){
         Member member = new Member();
-        Board board = new Board();
+        Board board;
+        if(requestBody.getBoardType() == BoardType.REVIEW) {
+            board = new BoardReview();
+        } else if (requestBody.getBoardType() == BoardType.BOAST) {
+            board = new BoardBoast();
+        } else if (requestBody.getBoardType() == BoardType.INQUIRY) {
+            board = new BoardInquiry();
+        }else if (requestBody.getBoardType() == BoardType.ANNOUNCEMENT){
+            board = new BoardAnnouncement();
+        }else {
+            board = new Board();
+        }
         member.setMemberId(requestBody.getMemberId());
         board.setTitle(requestBody.getTitle());
         board.setContent(requestBody.getContent());
         board.setContentImg(requestBody.getContentImg());
-//        board.setBoardType(requestBody.getBoardType);
+        board.setBoardType(requestBody.getBoardType());
         board.setMember(member);
         return board;
     }

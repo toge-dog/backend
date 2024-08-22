@@ -1,6 +1,7 @@
 package com.togedog.board.dto;
 
 import com.togedog.board.entity.Board;
+import com.togedog.board.entity.BoardType;
 import com.togedog.member.entity.Member;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class BoardDto{
                 message = "Content image 필드는 jpg, jpeg, png, gif, bmp, webp 중 하나의 확장자를 가진 유효한 이미지 URL이어야 합니다.")
         private String contentImg;
 
-//        private Board.BoardType boardType;
+        private BoardType boardType;
 
         private long memberId;
     }
@@ -35,7 +36,6 @@ public class BoardDto{
     @Getter
     @Setter
     public static class Patch {
-        @NotBlank
         private long boardId;
 
         @NotBlank
@@ -46,8 +46,8 @@ public class BoardDto{
 
         private String contentImg;
 
-//        @NotBlank
-//        private Board.BoardType boardType;
+        @NotBlank
+        private BoardType boardType;
 
     }
 
@@ -60,7 +60,8 @@ public class BoardDto{
         private String title;
         private String content;
         private String contentImg;
-//        private String boardType;
-
+        private String boardType;
+        private String boardStatus;
+        private int likesCount;
     }
 }
