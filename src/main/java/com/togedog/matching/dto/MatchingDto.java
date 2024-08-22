@@ -13,6 +13,8 @@ public class MatchingDto {
     @Setter
     @AllArgsConstructor
     public static class Post{
+        private long hostMemberId;
+
         private double latitude;
 
         private double longitude;

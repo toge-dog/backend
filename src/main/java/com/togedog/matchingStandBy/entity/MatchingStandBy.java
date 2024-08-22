@@ -25,10 +25,13 @@ public class MatchingStandBy extends Auditable  {
     @Column(name = "expired_at")
     private LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
 
-    @Column(name = "host_member_id")
+    @Column(name = "hostMemberId")
     private long hostMemberId;
-    //조인..
-    @ManyToOne
+
+    @Column(name = "guestMemberId")
+    private long guestMemberId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member guestMember;
 
@@ -39,7 +42,7 @@ public class MatchingStandBy extends Auditable  {
         this.guestMember = member;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MATCHING_ID")
     private Matching matching;
     public void addMatching(Matching matching) {

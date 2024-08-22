@@ -31,6 +31,9 @@ public class Matching extends Auditable {
     @Enumerated(value = EnumType.STRING)
     private MatchStatus matchStatus = MatchStatus.MATCH_HOSTING;
 
+    @Column(name = "host_member_id")
+    private long hostMemberId;
+
     @OneToMany
     private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
     public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
@@ -41,7 +44,7 @@ public class Matching extends Auditable {
     }
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member hostMember;
 
