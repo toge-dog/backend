@@ -1,6 +1,5 @@
 package com.togedog.pet.controller;
 
-import com.togedog.pet.dto.PetDto;
 import com.togedog.pet.entity.Pet;
 import com.togedog.pet.mapper.PetMapper;
 import com.togedog.pet.service.PetService;
@@ -9,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController

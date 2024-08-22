@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +39,34 @@ public class FriendService {
         return friendRepository.findAll(PageRequest.of(page, size,
                 Sort.by("memberId").descending()));
     }
+
+    @Transactional(readOnly = true)
+    public List<Member> getsFriends(String email, Friend.Status status) {
+        Member byEmail = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        List<Friend> friends = friendRepository.findByMemberAndFriendStatus(byEmail, status);
+        List<Member> members = new ArrayList<>();
+        for (Friend friend : friends) {
+            members.add(friend.getFriend());
+        }
+
+        return members;
+    }
+
+//    public List<Member> getFriendsOfUser(Authentication authentication) {
+//        String email = authentication.getName(); // 현재 로그인한 사용자의 이메일
+//        Member currentUser = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+//
+//        // 친구 목록 조회
+//        List<Friend> friendships = friendRepository.findAllByMember(currentUser);
+//
+//        // 친구 목록에서 친구(Member) 객체만 추출하여 리스트로 반환
+//        return friendships.stream()
+//                .map(Fr::getFriend)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public void addFriend(String fromEmail, String toEmail) {
@@ -68,7 +98,6 @@ public class FriendService {
         // verifedMember.getFriend -> 팬딩상태를 수락으로 변경 후 저장
         // 다음으로 verifedMember.요청이던 수락이던 맴버 둘 다 찾아서, 서로 위치가 바뀐 friend 객체 새롭게 만들고
         // 해당 friend의 상태를 수락으로 바꾸고 저장
-
 
         // 역방향 친구 관계도 생성
         Friend reverseFriend = new Friend();

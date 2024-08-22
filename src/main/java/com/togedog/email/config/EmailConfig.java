@@ -1,4 +1,4 @@
-package com.togedog.email;
+package com.togedog.email.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

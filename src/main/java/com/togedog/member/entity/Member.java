@@ -2,6 +2,7 @@ package com.togedog.member.entity;
 
 import com.togedog.board.entity.Board;
 import com.togedog.friend.entity.Friend;
+import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
@@ -47,12 +48,12 @@ public class Member{
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    @Column(name = "member_profile_image")
-    private String profileImage;
-
     @Enumerated(value = EnumType.STRING)
     @Column(name = "member_gender", nullable = false)
     private memberGender gender;
+
+    @Column(name = "member_profile_image")
+    private String profileImage;
 
     @Column(name = "member_report_cnt", nullable = false)
     private int reportCount;
@@ -118,6 +119,16 @@ public class Member{
     private List<String> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    private List<Likes> likes = new ArrayList<>();
+
+    public void setLike(Likes like) {
+        this.likes.add(like);
+        if(like.getMember() != this) {
+            like.setMember(this);
+        }
+    }
+
+    @OneToMany(mappedBy = "member")
     private List<Board> boards = new ArrayList<>();
 
     public void setBoard(Board board) {
@@ -152,4 +163,8 @@ public class Member{
             this.status = status;
         }
     }
+    // 엑세스 리프리시 토큰. key 쌍으로
+    // h2 같은 인메모리방식, nosql
+
+    // 화면줌 마커정보 레디스 범위만큼 캐싱
 }
