@@ -38,7 +38,7 @@ public class MatchingController {
     }
 
     @PatchMapping
-    public ResponseEntity patchMember(@Valid @RequestBody MatchingDto.Patch requestBody,
+    public ResponseEntity patchMatching(@Valid @RequestBody MatchingDto.Patch requestBody,
                                       Authentication authentication) {
         Matching updateMatching =
                 service.updateMatch(mapper.matchingPatchDtoToMatching(requestBody),authentication);

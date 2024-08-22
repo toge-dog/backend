@@ -12,4 +12,6 @@ public interface MatchingRepository extends JpaRepository<Matching, Long>{
 //    Optional<Matching> findByHostMemberId(long memberId);
 //    Optional<Matching> findByLatitudeAndLongitude(double latitude, double longitude);
     Optional<Matching> findByHostMemberAndMatchStatus(Member member, Matching.MatchStatus matchStatus);
+
+    List<Matching> findByHostMemberIdOrHostMemberId(long hostMemberId, long guestMemberId);
 }

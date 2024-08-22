@@ -8,6 +8,7 @@ public enum ExceptionCode {
 
     //추가해야할 에러 코드
     NOT_MATCH_HOST_MEMBER(404,"NOT_MATCH_HOST_MEMBER"),
+    REQUEST_ALREADY_RECEIVED_FROM_OTHER_PARTY(202,"NOT_MATCH_HOST_MEMBER"),
     ACCESS_DENIED(403,"ACCESS_DENIED"),
 
     //match 관련

@@ -2,8 +2,6 @@ package com.togedog.matchingStandBy.mapper;
 
 import com.togedog.matchingStandBy.dto.MatchingStandByDto;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
-import com.togedog.member.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
