@@ -1,4 +1,4 @@
-package com.togedog.email;
+package com.togedog.email.tool;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmailTool {
     private final JavaMailSender javaMailSender;
 
-
     public void sendEmail(String email, String title, String text) {
         SimpleMailMessage emailForm = createEmailForm(email, title, text);
         try {
@@ -25,7 +24,6 @@ public class EmailTool {
             e.printStackTrace();
         }
     }
-
 
     // 발신할 이메일 데이터 세팅
     private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {

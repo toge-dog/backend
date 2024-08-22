@@ -38,6 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ObjectMapper objectMapper = new ObjectMapper();
         LoginDto loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
@@ -64,7 +65,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
-        response.setHeader("memberId", String.valueOf(member.getMemberId()));
 
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);  // 추가
     }
@@ -100,12 +100,35 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      * @author Tizesin(신민준)
      */
     private String delegateRefreshToken(Member member) {
+        // 수정
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", member.getEmail());
+        claims.put("roles", member.getRoles());
+
         String subject = member.getEmail();
         Date expiration = jwtTokenizer.getTokenExpiration(jwtTokenizer.getRefreshTokenExpirationMinutes());
-        String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
 
-        String refreshToken = jwtTokenizer.generateRefreshToken(subject, expiration, base64EncodedSecretKey);
+        // 수정
+        String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
+        String accessToken = jwtTokenizer.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
+        String refreshToken = jwtTokenizer.generateRefreshToken(subject, expiration, base64EncodedSecretKey, accessToken);
 
         return refreshToken;
     }
+
+//    private URI createURI(String accessToken, String refreshToken) {
+//        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+//        queryParams.add("access_token", accessToken);
+//        queryParams.add("refresh_token", refreshToken);
+//
+//        return UriComponentsBuilder
+//                .newInstance()
+//                .scheme("http")
+//                .host("localhost")
+////                .port(80)
+//                .path("/receive-token.html")
+//                .queryParams(queryParams)
+//                .build()
+//                .toUri();
+//    }
 }

@@ -33,7 +33,15 @@ public enum ExceptionCode {
     PET_EXISTS(409,"Pet exists"),
 
     //친구 요청 관련
-    UNAUTHORIZED_ACCESS(404, "친구요청을 없습니다.");
+    UNAUTHORIZED_ACCESS(404, "친구요청을 없습니다."),
+
+    //메일 전송 관련
+    UNABLE_TO_SEND_EMAIL(404, "이메일 전송에 실패했습니다."),
+    NO_SUCH_ALGORITHM(404, "No_Such_Algorithm"),
+
+    //토큰 인증 관련
+    UNAUTHORIZED_MEMBER(401, "권한이 없는 멤버입니다."),
+    TOKEN_INVALID(404, "토큰값이 유효하지 않습니다.");
 
     @Getter
     private int statusCode;

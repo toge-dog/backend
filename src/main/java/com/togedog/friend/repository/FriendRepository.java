@@ -9,9 +9,10 @@ import java.util.Optional;
 
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
-    Optional<Friend> findByMemberAndFriendStatus(Member recipient, Friend.Status status);
     Optional<Friend> findByMemberAndFriend(Member member, Member friend);
-
     Optional<Friend> findByMember(Member member);
+    List<Friend> findByMemberAndFriendStatus(Member member, Friend.Status status);
+
+
 
 }
