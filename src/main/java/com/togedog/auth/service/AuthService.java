@@ -38,11 +38,9 @@ public class AuthService {
         memberRepository.save(member);
 
         return tokenDeleted;
-//        return jwtTokenizer.deleteRegisterToken(username);
     }
 
     public boolean isTokenValid(String userName) {
         return redisTemplate.hasKey(userName);
     }
-
 }

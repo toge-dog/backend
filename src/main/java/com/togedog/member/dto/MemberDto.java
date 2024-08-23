@@ -88,4 +88,12 @@ public class MemberDto {
 
         private String gender;
     }
+
+    public static class findId {
+        private String phone;
+
+        private String name;
+
+        private String nickName;
+    }
 }

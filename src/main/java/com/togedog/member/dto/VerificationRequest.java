@@ -13,5 +13,5 @@ public class VerificationRequest {
     @Email
     private String email;
     private String authCode;
-    private MemberDto.Post memberDto;
+//    private MemberDto.Post memberDto;
 }
