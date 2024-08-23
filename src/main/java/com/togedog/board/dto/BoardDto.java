@@ -24,8 +24,6 @@ public class BoardDto{
         @Size(min = 1, max = 5000, message = "1자에서 5000자 이내로 작성 가능합니다")
         private String content;
 
-        @Pattern(regexp = "^(https?:\\/\\/)?([\\w\\d-]+\\.)+[\\w\\d-]+(\\/[\\w\\d\\-._~:?#\\[\\]@!$&'()*+,;=]*)?\\.(jpg|jpeg|png|gif|bmp|webp)$",
-                message = "Content image 필드는 jpg, jpeg, png, gif, bmp, webp 중 하나의 확장자를 가진 유효한 이미지 URL이어야 합니다.")
         private String contentImg;
 
         private BoardType boardType;

@@ -58,8 +58,6 @@ public class MemberService {
     public Member updateMember(Member member, Authentication authentication) {
         Member authenticatedMember = extractMemberFromAuthentication(authentication);
 
-//        Member verifedMember = verifiedMember(member.getMemberId());
-
         Optional.ofNullable(member.getPhone())
                 .ifPresent(phone -> authenticatedMember.setPhone(phone));
         Optional.ofNullable(member.getPassword())
@@ -68,6 +66,15 @@ public class MemberService {
                 .ifPresent(nickName -> authenticatedMember.setNickName(nickName));
 
         return memberRepository.save(authenticatedMember);
+    }
+
+    public Member findMemberId(Member member) {
+        Optional<Member> verifiedMember =
+                memberRepository.findByPhone(member.getPhone());
+        Member findedMember = verifiedMember
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        return findedMember;
     }
 
     public void deleteMember(Authentication authentication) {
@@ -87,9 +94,9 @@ public class MemberService {
 
     private void verifyExistMember(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
-            if(member.isPresent()) {
-                    throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
-            }
+        if(member.isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
+        }
     }
 
     private void verifyExistPhone(String phone) {
