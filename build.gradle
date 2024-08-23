@@ -27,6 +27,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.apache.httpcomponents:httpclient:4.4'
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
