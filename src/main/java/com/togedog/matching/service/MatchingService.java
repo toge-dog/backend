@@ -35,10 +35,19 @@ public class MatchingService {
 
     public Matching createMatch(Matching matching, Authentication authentication) {
         Member member = extractMemberFromAuthentication(authentication);
-        matching.setHostMember(member);
-        matching.setHostMemberId(member.getMemberId());
-        findCheckOtherMatchStatusHosting(member);
-        return matchingRepository.save(matching);
+        Optional<Matching> optionalMatching = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING);
+
+        if (optionalMatching.isPresent()) {
+            Matching findMatch = optionalMatching.orElseThrow(()-> new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
+            findMatch.setLatitude(matching.getLatitude());
+            findMatch.setLongitude(matching.getLongitude());
+            return matchingRepository.save(findMatch);
+        } else {
+            matching.setHostMember(member);
+            matching.setHostMemberId(member.getMemberId());
+//            findCheckOtherMatchStatusHosting(member);
+            return matchingRepository.save(matching);
+        }
     }
 
     public Matching updateMatch(Matching matching,Authentication authentication) {
@@ -83,12 +92,12 @@ public class MatchingService {
         return result;
     }
 
-    private void findCheckOtherMatchStatusHosting(Member member) {
-        Optional<Matching> findMatch = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING);
-        findMatch.ifPresent(match -> {
-            throw new BusinessLogicException(ExceptionCode.MATCH_ALREADY_EXISTS);
-        });
-    }
+//    private void findCheckOtherMatchStatusHosting(Member member) {
+//        Optional<Matching> findMatch = matchingRepository.findByHostMemberAndMatchStatus(member, Matching.MatchStatus.MATCH_HOSTING);
+//        findMatch.ifPresent(match -> {
+//            throw new BusinessLogicException(ExceptionCode.MATCH_ALREADY_EXISTS);
+//        });
+//    }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {
         String email = (String) authentication.getPrincipal();
