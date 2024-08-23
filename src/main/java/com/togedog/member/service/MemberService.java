@@ -1,6 +1,5 @@
 package com.togedog.member.service;
 
-import com.togedog.auth.service.AuthService;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -25,7 +24,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
-    private final AuthService authService;
 
     public Member createMember(Member member) {
         verifyExistMember(member.getEmail()); // 중복검사 하나씩 빼서 Api 분리 할수도 있음
@@ -111,6 +109,10 @@ public class MemberService {
         if(member.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_EXISTS);
         }
+    }
+
+    public List<Member> createChatRoomForCustomEvent(List<Long> memberIds) {
+        return memberRepository.findByMemberIdOrMemberId(memberIds.get(0),memberIds.get(1));
     }
 
 

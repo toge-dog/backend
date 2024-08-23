@@ -89,6 +89,8 @@ public class MatchingStandByService {
                     memberIds.add(findMatchingStandBy.getGuestMemberId());
                     CustomEvent event = new CustomEvent(this, SUCCESS_RELATED_MATCHING_DATA, memberIds);
                     eventPublisher.publishEvent(event);
+                    event = new CustomEvent(this, CREATE_CHAT_ROOM, memberIds);
+                    eventPublisher.publishEvent(event);
                     extractedDataAndChangeStatusToFail(memberIds,MatchingStandBy.Status.STATUS_WAIT);
                 }
                 return repository.save(findMatchingStandBy);

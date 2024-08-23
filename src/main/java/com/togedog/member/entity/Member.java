@@ -1,6 +1,7 @@
 package com.togedog.member.entity;
 
 import com.togedog.board.entity.Board;
+import com.togedog.chatRoom.entity.ChatRoomMember;
 import com.togedog.friend.entity.Friend;
 import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
@@ -79,6 +80,10 @@ public class Member{
 
     @OneToMany(mappedBy = "guestMember")
     private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
+
+    // 1:N 관계 설정 (회원과 채팅방-회원) 임시 추가
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
     public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
         matchingStandBys.add(matchingStandBy);
