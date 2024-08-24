@@ -146,4 +146,8 @@ public class MemberService {
         return memberRepository.findByEmail(username)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
+
+    public List<Member> createChatRoomForCustomEvent(List<Long> memberIds) {
+        return memberRepository.findByMemberIdOrMemberId(memberIds.get(0),memberIds.get(1));
+    }
 }
