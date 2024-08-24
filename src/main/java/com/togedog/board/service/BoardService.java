@@ -10,6 +10,7 @@ import com.togedog.likes.entity.Likes;
 import com.togedog.likes.repository.LikesRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
+import com.togedog.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceContext;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -31,6 +33,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final LikesRepository likesRepository;
+    private final MemberService memberService;
 
 
     public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
@@ -52,35 +55,33 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public Board patchBoard(Board board){
-        Optional<Board> findBoard =
-                boardRepository.findById(board.getBoardId());
+    public Board patchBoard(Board board, Authentication authentication){
+        Board findBoard = boardRepository.findById(board.getBoardId())
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
+
         Optional.ofNullable(board.getBoardType())
-                .ifPresent(boardType -> board.setBoardType(boardType));
+                .ifPresent(boardType -> findBoard.setBoardType(boardType));
         Optional.ofNullable(board.getContent())
-                .ifPresent(content -> board.setContent(content));
+                .ifPresent(content -> findBoard.setContent(content));
         Optional.ofNullable(board.getTitle())
-                .ifPresent(title -> board.setTitle(title));
+                .ifPresent(title -> findBoard.setTitle(title));
         Optional.ofNullable(board.getContentImg())
-                .ifPresent(contentImg -> board.setContentImg(contentImg));
-        return boardRepository.save(board);
+                .ifPresent(contentImg -> findBoard.setContentImg(contentImg));
+
+        findBoard.setModifiedAt(LocalDateTime.now());
+        return boardRepository.save(findBoard);
     }
 
     public Board getBoard(Board board){
-        if (board.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
-            throw new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND);
-        }
-        int viewCount = board.getViewCount();
-        viewCount++;
-        board.setViewCount(viewCount);
-        boardRepository.save(board);
-        board = boardRepository.findById(board.getBoardId()).orElseThrow((
-                () -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND)
-        ));
-        return board;
+        board.incrementViewCount();
+        Board findBoard = boardRepository.findById(board.getBoardId())
+                .orElseThrow((
+                        () -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND)
+                ));
+        return findBoard;
     }
 
-    public void deleteBoard(long boardId){
+    public void deleteBoard(long boardId, Authentication authentication){
         Board findBoard = findVerifiedBoard(boardId);
         findBoard.setBoardStatus(Board.BoardStatus.BOARD_DELETED);
     }
@@ -97,20 +98,6 @@ public class BoardService {
 
     public Page<Board> findBoards(int page, int size){
         return boardRepository.findAll(PageRequest.of(page,size, Sort.by("boardId").descending()));
-    }
-
-    public void toggleLikes(Likes likes){
-        Board board = findVerifiedBoard(likes.getBoard().getBoardId());
-        Member member = memberRepository.findById(likes.getMember().getMemberId())
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        if (likesRepository.findByMember(member).isPresent()) {
-            likesRepository.delete(likes);
-            board.setLikesCount(board.getLikesCount()-1);
-        } else {
-            likesRepository.save(likes);
-            board.setLikesCount(board.getLikesCount()+1);
-        }
-        boardRepository.save(board);
     }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {

@@ -2,7 +2,7 @@ package com.togedog.board.repository;
 
 import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
-import com.togedog.member.entity.Member;
+import com.togedog.pet.dto.PetDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +14,3 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllByBoardType(BoardType boardType, Pageable pageable);
 }
-

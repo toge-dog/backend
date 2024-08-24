@@ -15,7 +15,6 @@ import javax.persistence.Enumerated;
 
 public class BoardInquiry extends Board {
 
-    private String statusDescription = BoardInquiryStatus.RECEIVED.getStatusDescription();
 
     @Enumerated(value = EnumType.STRING)
     private BoardInquiryStatus boardInquiryStatus = BoardInquiryStatus.RECEIVED;
@@ -28,14 +27,4 @@ public class BoardInquiry extends Board {
         @Getter
         private String statusDescription;
     }
-
-    public void updateInquiryStatus(BoardInquiryStatus status) {
-        this.boardInquiryStatus = status;
-    }
-
-    public void setBoardInquiryStatus(BoardInquiryStatus boardInquiryStatus) {
-        this.boardInquiryStatus = boardInquiryStatus;
-        this.statusDescription = boardInquiryStatus.getStatusDescription();
-    }
-
 }
