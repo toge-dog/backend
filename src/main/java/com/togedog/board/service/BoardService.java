@@ -1,6 +1,7 @@
 package com.togedog.board.service;
 
 import com.togedog.board.entity.Board;
+import com.togedog.board.entity.BoardType;
 import com.togedog.board.repository.BoardRepository;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -10,6 +11,7 @@ import com.togedog.likes.repository.LikesRepository;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,9 +32,23 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final LikesRepository likesRepository;
 
-    public Board createBoard(Board board, Authentication authentication){
+
+    public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return boardRepository.findAllByBoardType(boardType, pageable);
+    }
+
+    public BoardType convertToBoardType(String boardType) {
+        try {
+            return BoardType.valueOf(boardType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_BOARD_TYPE);
+        }
+    }
+    public Board createBoard(Board board, BoardType boardType,Authentication authentication){
         Member member = extractMemberFromAuthentication(authentication);
         board.setMember(member);
+        board.setBoardType(boardType);
         return boardRepository.save(board);
     }
 
@@ -98,7 +114,7 @@ public class BoardService {
     }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {
-        if (authentication == null || authentication.getPrincipal() == null) {
+        if (authentication.getPrincipal() == null) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
         String email = (String) authentication.getPrincipal();

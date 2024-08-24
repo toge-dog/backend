@@ -25,7 +25,6 @@ public interface BoardMapper {
         }else {
             board = new Board();
         }
-        member.setMemberId(requestBody.getMemberId());
         board.setTitle(requestBody.getTitle());
         board.setContent(requestBody.getContent());
         board.setContentImg(requestBody.getContentImg());
