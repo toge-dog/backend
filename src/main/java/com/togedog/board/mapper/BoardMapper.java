@@ -25,7 +25,6 @@ public interface BoardMapper {
         }else {
             board = new Board();
         }
-        member.setMemberId(requestBody.getMemberId());
         board.setTitle(requestBody.getTitle());
         board.setContent(requestBody.getContent());
         board.setContentImg(requestBody.getContentImg());
@@ -46,6 +45,7 @@ public interface BoardMapper {
                         .content(board.getContent())
                         .boardType(board.getBoardType().getBoardDescription())
                         .boardStatus(board.getBoardStatus().getStatusDescription())
+                        .likesCount(board.getLikesCount())
                         .viewCount(board.getViewCount())
                         .build())
                 .collect(Collectors.toList());

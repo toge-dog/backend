@@ -1,5 +1,6 @@
 package com.togedog.board.controller;
 
+import com.togedog.auth.service.AuthService;
 import com.togedog.board.dto.BoardDto;
 import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
@@ -7,9 +8,6 @@ import com.togedog.board.mapper.BoardMapper;
 import com.togedog.board.service.BoardService;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
-import com.togedog.likes.dto.LikesDto;
-import com.togedog.likes.mapper.LikesMapper;
-import com.togedog.member.entity.Member;
 import com.togedog.utils.UriCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,56 +30,79 @@ public class BoardController {
     private final static String BOARD_DEF_URL = "/boards";
     private final BoardMapper mapper;
     private final BoardService service;
+    private final AuthService authService;
 
-    @PostMapping("/{board-Type}")
-    public ResponseEntity postBoard(@PathVariable("board-Type") BoardType boardType,
-                                    @Valid @RequestBody BoardDto.Post requestBody,
-                                    Authentication authentication){
-        requestBody.setBoardType(boardType);
-        Board createBoard =
-                service.createBoard(mapper.boardDtoPostToBoard(requestBody),authentication);
-
+    @PostMapping("/{board-type}")
+    public ResponseEntity<Void> postBoard(@PathVariable("board-type") String boardType,
+                                          @Valid @RequestBody BoardDto.Post requestBody,
+                                          Authentication authentication) {
+        BoardType enumBoardType = service.convertToBoardType(boardType);
+        Board createBoard = service.createBoard(mapper.boardDtoPostToBoard(requestBody),enumBoardType, authentication);
         URI location = UriCreator.createUri(BOARD_DEF_URL, createBoard.getBoardId());
-
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/{board-Id}")
-    public ResponseEntity getBoard(@PathVariable("board-Id")
+    @GetMapping("/{board-id}")
+    public ResponseEntity getBoard(@PathVariable("board-id")
                                    @Positive long boardId) {
         Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
-        if (findBoard.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
-            return new ResponseEntity<>(new SingleResponseDto<>(null), HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
                 HttpStatus.OK);
     }
 
     @PatchMapping("/{board-Id}")
-    public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId
-            , @Valid @RequestBody BoardDto.Patch requestBody){
+    public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId,
+                                     @Valid @RequestBody BoardDto.Patch requestBody,
+                                     Authentication authentication){
+        String email = null;
+        if (authentication != null) {
+            email = (String) authentication.getPrincipal();
+            boolean isLoggedOut = !authService.isTokenValid(email);
+            if (isLoggedOut) {
+                return new ResponseEntity<>("User Logged Out", HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         requestBody.setBoardId(boardId);
-        Board patchBoard = service.patchBoard(mapper.boardDtoPatchToBoard(requestBody));
+        Board patchBoard = service.patchBoard(mapper.boardDtoPatchToBoard(requestBody), authentication);
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.boardToBoardDtoResponse(patchBoard)),
                 HttpStatus.OK);
     }
 
     @DeleteMapping ("/{board-Id}")
-    public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId) {
-        service.deleteBoard(boardId);
+    public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId,
+                                      Authentication authentication) {
+        String email = null;
+        if (authentication != null) {
+            email = (String) authentication.getPrincipal();
+            boolean isLoggedOut = !authService.isTokenValid(email);
+            if (isLoggedOut) {
+                return new ResponseEntity<>("User Logged Out", HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        service.deleteBoard(boardId, authentication);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity GetBoards(@Positive @RequestParam int page,
+    @GetMapping("/type/{board-type}")
+    public ResponseEntity getBoards(@PathVariable("board-type") String boardType,
+                                    @Positive @RequestParam int page,
                                     @Positive @RequestParam int size){
-        Page<Board> pageBoards = service.findBoards(page-1,size);
+        BoardType enumBoardType;
+        try {
+            enumBoardType = service.convertToBoardType(boardType);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Invalid board type: " + boardType, HttpStatus.BAD_REQUEST);
+        }
+        Page<Board> pageBoards = service.findBoardsByType(enumBoardType, page - 1, size);
         List<Board> boards = pageBoards.getContent();
-
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.boardToBoardDtoResponses(boards),pageBoards),
+                new MultiResponseDto<>(mapper.boardToBoardDtoResponses(boards), pageBoards),
                 HttpStatus.OK);
     }
 }

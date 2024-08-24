@@ -40,10 +40,10 @@ public class Board extends Auditable {
     private List<Likes> likes = new ArrayList<>();
 
     @Column
-    private int likesCount;
+    private Integer likesCount = 0;
 
     @Column
-    private int viewCount;
+    private Integer viewCount = 0;
 
     @Column
     @Enumerated(value = EnumType.STRING)
@@ -58,8 +58,12 @@ public class Board extends Auditable {
         @Getter
         private String statusDescription;
     }
+
     @Column
     @Enumerated(value = EnumType.STRING)
     private BoardType boardType = BoardType.BOAST;
 
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }

@@ -2,13 +2,11 @@ package com.togedog.config;
 
 import com.togedog.auth.filter.JwtAuthenticationFilter;
 import com.togedog.auth.filter.JwtVerificationFilter;
-import com.togedog.auth.handler.MemberAccessDeniedHandler;
-import com.togedog.auth.handler.MemberAuthenticationEntryPoint;
-import com.togedog.auth.handler.MemberAuthenticationFailureHandler;
-import com.togedog.auth.handler.MemberAuthenticationSuccessHandler;
+import com.togedog.auth.handler.*;
 import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.member.repository.MemberRepository;
+import com.togedog.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -80,7 +79,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
                 )
-                .oauth2Login(withDefaults());
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(new Oauth2MemberSuccessHandler(jwtTokenizer, authorityUtils, memberRepository)));
         return http.build();
     }
 //    @Bean
@@ -132,7 +132,7 @@ public class SecurityConfiguration {
         configuration.setAllowedOriginPatterns(Collections.singletonList("*"));  // 모든 오리진 허용
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));  // 허용되는 HTTP 메서드
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));  // 허용되는 헤더
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "memberId"));  // 노출할 헤더 추가
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "memberId", "Location"));  // 노출할 헤더 추가
         configuration.setAllowCredentials(true);  // 인증 관련 정보를 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -166,5 +166,21 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
+    }
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        var clientRegistration = clientRegistration();
+
+        return new InMemoryClientRegistrationRepository(clientRegistration);
+    }
+
+    private ClientRegistration clientRegistration() {
+        return CommonOAuth2Provider
+                .GOOGLE
+                .getBuilder("google")
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
     }
 }

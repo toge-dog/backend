@@ -18,6 +18,8 @@ public enum ExceptionCode {
     //board 관련
     BOARD_NOT_FOUND(404,"Board Not Found"),
     BOARD_EXISTS(409,"Board exists"),
+    INVALID_BOARD_TYPE(400, "Invalid board type"),
+
 
     //member 관련
     MEMBER_NOT_FOUND(404,"Member Not Found"),

@@ -25,7 +25,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
-    private final AuthService authService;
 
     public Member createMember(Member member) {
         verifyExistMember(member.getEmail()); // 중복검사 하나씩 빼서 Api 분리 할수도 있음

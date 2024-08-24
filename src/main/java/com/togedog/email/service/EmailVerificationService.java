@@ -41,6 +41,11 @@ public class EmailVerificationService {
         String title = "유저 이메일 인증 번호";
         String authCode = this.createCode();
 
+        //더미계정생성을 위한 authCode 노출
+        System.out.println("*".repeat(30));
+        System.out.println("Email authCode : " + authCode);
+        System.out.println("*".repeat(30));
+
         // Redis에 인증 코드를 저장, 설정된 시간(authCodeExpirationMillis) 이후에 자동으로 만료됨
         redisTool.setValues(AUTH_CODE_PREFIX + toEmail,
                 authCode, Duration.ofMillis(authCodeExpirationMillis));

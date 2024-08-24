@@ -6,6 +6,7 @@ import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -167,4 +168,8 @@ public class Member{
     // h2 같은 인메모리방식, nosql
 
     // 화면줌 마커정보 레디스 범위만큼 캐싱
+
+    public Member(String email) {
+        this.email = email;
+    }
 }
