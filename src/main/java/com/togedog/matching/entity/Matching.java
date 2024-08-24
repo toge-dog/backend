@@ -34,7 +34,7 @@ public class Matching extends Auditable {
     @Column(name = "host_member_id")
     private long hostMemberId;
 
-    @OneToMany
+    @OneToMany(mappedBy = "matching")
     private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
     public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
         matchingStandBys.add(matchingStandBy);
@@ -42,7 +42,6 @@ public class Matching extends Auditable {
             matchingStandBy.addMatching(this);
         }
     }
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
