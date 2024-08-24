@@ -188,26 +188,9 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/find-my-id")
+    @PostMapping("/find-my-id")
     public ResponseEntity findMyId(@RequestBody MemberDto.findId dto) {
         Member email = service.findMemberId(memberMapper.memberFindIdToMember(dto));
-        return new ResponseEntity<>(memberMapper.memberToResponseId(email), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(memberMapper.memberToResponseId(email), HttpStatus.OK);
     }
-
-    //    @PostMapping("/sign-up/email-verify")
-//    public ResponseEntity verifyCodeAndSignUp(@Valid @RequestBody VerificationRequest verificationRequest) {
-//        String email = verificationRequest.getEmail();
-//        String authCode = verificationRequest.getAuthCode();
-//
-//        boolean isVerified = emailVerificationService.verifyCode(email, authCode);
-//        if(!isVerified) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 코드가 올바르 않습니다");
-//        }
-//
-//        Member member = memberMapper.memberPostToMember(verificationRequest.getMemberDto());
-//        service.createMember(member);
-//        URI location = UriCreator.createUri(MEMBER_DEFAULT_URL, member.getMemberId());
-//
-//        return ResponseEntity.created(location).build();
-//    }
 }

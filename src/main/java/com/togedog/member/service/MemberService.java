@@ -77,6 +77,11 @@ public class MemberService {
         return findedMember;
     }
 
+    public Member findMemberPassWord(Member member) {
+        memberRepository.findByEmailAndPhoneAndName(member.getEmail(), member.getPhone(), member.getName());
+        return member;
+    }
+
     public void deleteMember(Authentication authentication) {
         Member authenticatedMember = extractMemberFromAuthentication(authentication);
         authenticatedMember.setStatus(Member.memberStatus.DELETED);
