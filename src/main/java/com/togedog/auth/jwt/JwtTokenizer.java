@@ -1,15 +1,20 @@
 package com.togedog.auth.jwt;
 
+import com.togedog.member.entity.Member;
+import com.togedog.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -109,6 +114,59 @@ public class JwtTokenizer {
                 .parseClaimsJws(jws);
     }
 
+    /**
+     * websocket에서 사용자 토큰 인증 정보 인터셉터 후 토큰 내 정보 뽑는 메서드
+     *
+     * @param 토큰 문자열 값
+     * @return 반환값 내용
+     * @author Tizesin(신민준)
+     */
+//    //토큰에서 회원정보 추출
+//    public String getId(String token) {
+//        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+//    }
+//    //JWT 토큰에서 인증 정보 조회
+//    public Authentication getAuthentication(String token) {
+//        Member member = MemberRepository.findById(Long.valueOf(this.getId(token)));
+//        return new JwtAuthenticationToken(member, null);
+//    }
+
+    /**
+     * websocket을 통한 통신을 하기전 진행하는 handshake에서 사용자 인증 정보를 확인 하기 위함
+     *
+     * @param accessToken과 암호화할 secretkey값
+     * @return 토큰안의 claims 정보
+     * @throws ExpiredJwtException / MalformedJwtException
+     * @author Tizesin(신민준)
+     */
+    public static Claims getClaimsFromAccessToken(String accessToken, String base64EncodedSecretKey)
+            throws ExpiredJwtException, MalformedJwtException {
+
+        Key key = getKeyFromBase64EncodedKeyForWebSocket(base64EncodedSecretKey);
+
+        try {
+            // 토큰을 파싱하여 Claims를 추출
+            return Jwts.parserBuilder()
+                    .setSigningKey(key) // 서명 검증을 위한 키 설정
+                    .build()
+                    .parseClaimsJws(accessToken) // 토큰을 파싱하여 클레임 반환
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            // 토큰이 만료된 경우
+            throw new ExpiredJwtException(null, null, "토큰이 만료되었습니다.");
+        } catch (MalformedJwtException e) {
+            // 잘못된 토큰 형식일 경우
+            throw new MalformedJwtException("잘못된 토큰 형식입니다.");
+        }
+    }
+
+    /**
+     * getTokenExpiration의 설명을 여기에 작성한다.
+     *
+     * @param 발행일 기준 만료일 설정 시간
+     * @return 만료일 계산 결과
+     * @author Tizesin(신민준)
+     */
     public Date getTokenExpiration(int expirationMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expirationMinutes);
@@ -120,7 +178,12 @@ public class JwtTokenizer {
     private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
         Key key = Keys.hmacShaKeyFor(keyBytes);
+        return key;
+    }
 
+    private static Key getKeyFromBase64EncodedKeyForWebSocket(String base64EncodedSecretKey) {
+        byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
         return key;
     }
 

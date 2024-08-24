@@ -23,7 +23,7 @@ public class TimeCheckScheduler {
     public void checkTime() {
         // 현재 시간을 출력하는 로직
         LocalDateTime now = LocalDateTime.now();
-        service.changeStatusToTimeOut(now);
+//        service.changeStatusToTimeOut(now);
 
 
 //        System.out.println("현재 시간: " + formattedNow + " - 스레드: " + Thread.currentThread().getName());
