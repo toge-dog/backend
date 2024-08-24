@@ -2,6 +2,7 @@ package com.togedog.board.dto;
 
 import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
+import com.togedog.comment.entity.Comment;
 import com.togedog.member.entity.Member;
 import lombok.*;
 
@@ -27,8 +28,6 @@ public class BoardDto{
         private String contentImg;
 
         private BoardType boardType;
-
-        private long memberId;
     }
 
     @Getter
@@ -55,12 +54,16 @@ public class BoardDto{
     @NoArgsConstructor
     @Builder
     public static class Response {
+        private long boardId;
         private String title;
         private String content;
         private String contentImg;
         private String boardType;
         private String boardStatus;
+        private Comment comment;
         private int likesCount;
         private int viewCount;
+        private String boardInquiryStatus;
+        private String statusDescription;
     }
 }

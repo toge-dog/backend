@@ -33,22 +33,21 @@ public class BoardController {
     private final BoardMapper mapper;
     private final BoardService service;
 
-    @PostMapping("/{board-Type}")
-    public ResponseEntity postBoard(@PathVariable("board-Type") BoardType boardType,
-                                    @Valid @RequestBody BoardDto.Post requestBody,
-                                    Authentication authentication){
-        requestBody.setBoardType(boardType);
-        Board createBoard =
-                service.createBoard(mapper.boardDtoPostToBoard(requestBody),authentication);
-
+    @PostMapping("/{board-type}")
+    public ResponseEntity<Void> postBoard(@PathVariable("board-type") String boardType,
+                                          @Valid @RequestBody BoardDto.Post requestBody,
+                                          Authentication authentication) {
+        BoardType enumBoardType = service.convertToBoardType(boardType);
+        Board createBoard = service.createBoard(mapper.boardDtoPostToBoard(requestBody),enumBoardType, authentication);
         URI location = UriCreator.createUri(BOARD_DEF_URL, createBoard.getBoardId());
-
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/{board-Id}")
-    public ResponseEntity getBoard(@PathVariable("board-Id")
+    @GetMapping("/type/{board-type}/{board-id}")
+    public ResponseEntity getBoard(@PathVariable("board-type") String boardType,
+                                   @PathVariable("board-id")
                                    @Positive long boardId) {
+        BoardType enumBoardType = service.convertToBoardType(boardType);
         Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
         if (findBoard.getBoardStatus() == Board.BoardStatus.BOARD_DELETED){
             return new ResponseEntity<>(new SingleResponseDto<>(null), HttpStatus.NOT_FOUND);
@@ -58,8 +57,8 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @PatchMapping("/{board-Id}")
-    public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId
+    @PatchMapping("/{board-id}")
+    public ResponseEntity patchBoard(@PathVariable("board-id") @Positive long boardId
             , @Valid @RequestBody BoardDto.Patch requestBody){
         requestBody.setBoardId(boardId);
         Board patchBoard = service.patchBoard(mapper.boardDtoPatchToBoard(requestBody));
@@ -68,15 +67,17 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping ("/{board-Id}")
-    public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId) {
+    @DeleteMapping ("/{board-id}")
+    public ResponseEntity deleteBoard(@PathVariable("board-id") @Positive long boardId) {
         service.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity GetBoards(@Positive @RequestParam int page,
+    @GetMapping("/type/{board-type}")
+    public ResponseEntity getBoards(@PathVariable("board-type") String boardType,
+                                    @Positive @RequestParam int page,
                                     @Positive @RequestParam int size){
+        BoardType enumBoardType = service.convertToBoardType(boardType);
         Page<Board> pageBoards = service.findBoards(page-1,size);
         List<Board> boards = pageBoards.getContent();
 
