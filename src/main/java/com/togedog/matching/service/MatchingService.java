@@ -84,9 +84,18 @@ public class MatchingService {
     }
 
     @Transactional(readOnly = true)
-    public Matching findVerifiedMatch(long matchId) {
+    public Matching findVerifiedMatch(String email) {
         Optional<Matching> findMatch =
-                matchingRepository.findById(matchId);
+                matchingRepository.findByHostMember_Email(email);
+        Matching result = findMatch.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
+        return result;
+    }
+    @Transactional(readOnly = true)
+    public Matching findVerifiedMatch(Authentication authentication) {
+        Member member = extractMemberFromAuthentication(authentication);
+        Optional<Matching> findMatch =
+                matchingRepository.findByHostMember(member);
         Matching result = findMatch.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
         return result;
