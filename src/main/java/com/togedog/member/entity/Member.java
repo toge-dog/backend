@@ -1,12 +1,12 @@
 package com.togedog.member.entity;
 
 import com.togedog.board.entity.Board;
-import com.togedog.chatRoom.entity.ChatRoomMember;
 import com.togedog.friend.entity.Friend;
 import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -80,10 +80,6 @@ public class Member{
 
     @OneToMany(mappedBy = "guestMember")
     private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
-
-    // 1:N 관계 설정 (회원과 채팅방-회원) 임시 추가
-    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
-    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
     public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
         matchingStandBys.add(matchingStandBy);
@@ -172,4 +168,8 @@ public class Member{
     // h2 같은 인메모리방식, nosql
 
     // 화면줌 마커정보 레디스 범위만큼 캐싱
+
+    public Member(String email) {
+        this.email = email;
+    }
 }

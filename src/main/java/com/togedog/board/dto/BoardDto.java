@@ -2,7 +2,6 @@ package com.togedog.board.dto;
 
 import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
-import com.togedog.comment.entity.Comment;
 import com.togedog.member.entity.Member;
 import lombok.*;
 
@@ -16,7 +15,6 @@ public class BoardDto{
     @Getter
     @AllArgsConstructor
     public static class Post {
-//        public Board.BoardType getBoardType;
         @NotBlank
         @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s]+$", message = "제목은 영문자,숫자,공백,한글만 허용됩니다")
         private String title;
@@ -32,6 +30,8 @@ public class BoardDto{
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Patch {
         private long boardId;
 
@@ -42,10 +42,6 @@ public class BoardDto{
         private String content;
 
         private String contentImg;
-
-        @NotBlank
-        private BoardType boardType;
-
     }
 
     @Getter
@@ -54,16 +50,12 @@ public class BoardDto{
     @NoArgsConstructor
     @Builder
     public static class Response {
-        private long boardId;
         private String title;
         private String content;
         private String contentImg;
         private String boardType;
         private String boardStatus;
-        private Comment comment;
         private int likesCount;
         private int viewCount;
-        private String boardInquiryStatus;
-        private String statusDescription;
     }
 }

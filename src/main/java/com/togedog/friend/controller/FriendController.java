@@ -54,7 +54,7 @@ public class FriendController {
 //                    friendMapper.friendsToResponse(friendList), friendPage), HttpStatus.OK);
 //    }
 
-    @GetMapping("/my-friend")
+    @GetMapping
     public ResponseEntity getsFriends(Authentication authentication) {
         String email;
         if (authentication != null) {
@@ -72,8 +72,5 @@ public class FriendController {
 
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
-
-
-
 
 }

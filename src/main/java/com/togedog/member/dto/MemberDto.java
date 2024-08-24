@@ -89,11 +89,33 @@ public class MemberDto {
         private String gender;
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class findId {
         private String phone;
+    }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class responseEmail {
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class findPassWord {
+        private String email;
+        private String phone;
         private String name;
+    }
 
-        private String nickName;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class responsePassWord {
+        private String passWord;
     }
 }

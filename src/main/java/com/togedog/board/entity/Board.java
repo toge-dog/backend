@@ -1,8 +1,6 @@
 package com.togedog.board.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.togedog.audit.Auditable;
-import com.togedog.comment.entity.Comment;
 import com.togedog.likes.entity.Likes;
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
@@ -38,17 +36,14 @@ public class Board extends Auditable {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
-    private List<Comment> comments = new ArrayList<>();
-
     @OneToMany(mappedBy = "board")
     private List<Likes> likes = new ArrayList<>();
 
     @Column
-    private int likesCount;
+    private Integer likesCount = 0;
 
     @Column
-    private int viewCount;
+    private Integer viewCount = 0;
 
     @Column
     @Enumerated(value = EnumType.STRING)
@@ -63,8 +58,12 @@ public class Board extends Auditable {
         @Getter
         private String statusDescription;
     }
+
     @Column
     @Enumerated(value = EnumType.STRING)
     private BoardType boardType = BoardType.BOAST;
 
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }

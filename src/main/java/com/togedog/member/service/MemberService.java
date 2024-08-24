@@ -1,5 +1,6 @@
 package com.togedog.member.service;
 
+import com.togedog.auth.service.AuthService;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -75,6 +76,11 @@ public class MemberService {
         return findedMember;
     }
 
+    public Member findMemberPassWord(Member member) {
+        memberRepository.findByEmailAndPhoneAndName(member.getEmail(), member.getPhone(), member.getName());
+        return member;
+    }
+
     public void deleteMember(Authentication authentication) {
         Member authenticatedMember = extractMemberFromAuthentication(authentication);
         authenticatedMember.setStatus(Member.memberStatus.DELETED);
@@ -109,10 +115,6 @@ public class MemberService {
         if(member.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_EXISTS);
         }
-    }
-
-    public List<Member> createChatRoomForCustomEvent(List<Long> memberIds) {
-        return memberRepository.findByMemberIdOrMemberId(memberIds.get(0),memberIds.get(1));
     }
 
 

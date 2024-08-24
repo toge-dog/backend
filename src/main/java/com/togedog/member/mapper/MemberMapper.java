@@ -2,6 +2,7 @@ package com.togedog.member.mapper;
 
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
+import com.togedog.friend.dto.Dto;
 import com.togedog.member.dto.MemberDto;
 import com.togedog.member.entity.Member;
 import org.mapstruct.AfterMapping;
@@ -27,13 +28,7 @@ public interface MemberMapper {
 
     MemberDto.Response memberToResponseDto(Member member);
 
-    default String memberToResponseId(Member member) {
-        if (member == null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        }
-        String email = member.getEmail();
-        return email;
-    }
+    MemberDto.responseEmail memberToResponseId(Member member);
 
     List<MemberDto.Response> membersToResponseDto(List<Member> members);
 

@@ -45,6 +45,7 @@ public interface BoardMapper {
                         .content(board.getContent())
                         .boardType(board.getBoardType().getBoardDescription())
                         .boardStatus(board.getBoardStatus().getStatusDescription())
+                        .likesCount(board.getLikesCount())
                         .viewCount(board.getViewCount())
                         .build())
                 .collect(Collectors.toList());
