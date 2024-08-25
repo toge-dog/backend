@@ -1,21 +1,25 @@
 package com.togedog.board.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.togedog.audit.Auditable;
+import com.togedog.comment.entity.Comment;
 import com.togedog.likes.entity.Likes;
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @DiscriminatorColumn
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-
 public class Board extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,26 +34,43 @@ public class Board extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String contentImg;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     @OneToMany(mappedBy = "board")
-    private List<Likes> likes;
-//    @Column
-//    @Enumerated(value = EnumType.STRING)
-//    private BoardType boardType = BoardType.BOAST;
-//
-//    @AllArgsConstructor
-//    public enum BoardType {
-//        REPORT("신고 게시판"),
-//        INQUIRY("문의 게시판"),
-//        REVIEW("후기 게시판"),
-//        BOAST("자랑 게시판"),
-//        NOTICE("공지 게시판");
-//
-//        @Getter
-//        private String boardDescription;
-//
-//    }
+    private List<Likes> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Comment> comments = new ArrayList<>();
+
+    @Column
+    private Integer likesCount = 0;
+
+    @Column
+    private Integer viewCount = 0;
+
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private BoardStatus boardStatus = BoardStatus.BOARD_POST;
+
+
+    @AllArgsConstructor
+    public enum BoardStatus{
+        BOARD_POST("게시글 게시 상태"),
+        BOARD_DELETED("게시글 삭제 상태");
+
+        @Getter
+        @Setter
+        private String statusDescription;
+    }
+
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private BoardType boardType = BoardType.BOAST;
+
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }

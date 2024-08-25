@@ -2,13 +2,18 @@ package com.togedog.board.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Entity
 @DiscriminatorValue("I")
+@Getter
+@Setter
 public class BoardInquiry extends Board {
-
     @Enumerated(value = EnumType.STRING)
     private BoardInquiryStatus boardInquiryStatus = BoardInquiryStatus.RECEIVED;
 

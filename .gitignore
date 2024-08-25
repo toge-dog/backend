@@ -182,3 +182,6 @@ src/main/resources/application-local.yml
 
 # .iml
 server/src/*/*.iml
+
+mysql_data
+src/main/generated/

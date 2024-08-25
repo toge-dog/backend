@@ -12,7 +12,12 @@ public class MultiResponseDto<T> {
 
     public MultiResponseDto(List<T> data, Page page) {
         this.data = data;
-        this.pageInfo = new PageInfo(page.getNumber() + 1,
-                page.getSize(), page.getTotalElements(), page.getTotalPages());
+        if (page != null) {
+            this.pageInfo = new PageInfo(page.getNumber() + 1,
+                    page.getSize(), page.getTotalElements(), page.getTotalPages());
+        } else {
+            this.pageInfo = null; // 페이지네이션이 없으면 pageInfo를 null로 설정
+        }
+
     }
 }

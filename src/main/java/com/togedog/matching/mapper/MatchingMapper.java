@@ -10,6 +10,14 @@ import java.util.List;
 public interface MatchingMapper {
     Matching matchingPostDtoToMatching(MatchingDto.Post post);
     Matching matchingPatchDtoToMatching(MatchingDto.Patch patch);
-    MatchingDto.Response matchingToMatchingResponseDto(Matching matching);
+    default MatchingDto.Response matchingToMatchingResponseDto(Matching matching){
+        return new MatchingDto.Response(
+                matching.getMatchId(),
+                matching.getLatitude(),
+                matching.getLongitude(),
+                matching.getMatchStatus(),
+                matching.getHostMember().getMemberId()
+        );
+    }
     List<MatchingDto.Response> matchingToMatchingResponsesDto(List<Matching> matchings);
 }

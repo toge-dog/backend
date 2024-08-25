@@ -1,5 +1,10 @@
-package com.togedog.email;
+package com.togedog.email.service;
 
+import com.togedog.email.tool.EmailTool;
+import com.togedog.exception.BusinessLogicException;
+import com.togedog.exception.ExceptionCode;
+import com.togedog.member.repository.MemberRepository;
+import com.togedog.redis.tool.RedisTool;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
 import com.togedog.member.repository.MemberRepository;
@@ -20,7 +25,17 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class EmailVerificationService {
     private final MemberRepository memberRepository;
+    private final RedisTool redisTool;
+    private final EmailTool emailTool;
+    private static final String AUTH_CODE_PREFIX = "AuthCode ";
 
+    @Value("${email.super-code:SUPER_CODE}")
+    private String superCode;
+
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
+
+    // 이메일로 인증 코드를 전송하는 메서드
     private final RedisTool redisTool;
 
     private final EmailTool emailTool;
@@ -33,6 +48,23 @@ public class EmailVerificationService {
         //이메일 중복 검사
         if(memberRepository.existsByEmail(toEmail)) throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
 
+        //인증코드 생성
+        String title = "유저 이메일 인증 번호";
+        String authCode = this.createCode();
+
+        //더미계정생성을 위한 authCode 노출
+        System.out.println("*".repeat(30));
+        System.out.println("Email authCode : " + authCode);
+        System.out.println("*".repeat(30));
+
+        // Redis에 인증 코드를 저장, 설정된 시간(authCodeExpirationMillis) 이후에 자동으로 만료됨
+        redisTool.setValues(AUTH_CODE_PREFIX + toEmail,
+                authCode, Duration.ofMillis(authCodeExpirationMillis));
+        // 인증 코드를 사용자의 이메일로 전송
+        emailTool.sendEmail(toEmail, title, authCode);
+    }
+
+    // 사용자가 제출한 인증 코드가 맞는지 검증하는 메서드
         //인증코드 생성, 저장 및 이메일 전송
         String title = "유저 이메일 인증 번호";
         String authCode = this.createCode();
@@ -41,7 +73,6 @@ public class EmailVerificationService {
                 authCode, Duration.ofMillis(authCodeExpirationMillis));
         emailTool.sendEmail(toEmail, title, authCode);
     }
-
 
     public boolean verifyCode(String email, String authCode) {
         String redisAuthCode = redisTool.getValues(AUTH_CODE_PREFIX + email);
@@ -60,5 +91,15 @@ public class EmailVerificationService {
         } catch (NoSuchAlgorithmException e) {
             throw new BusinessLogicException(ExceptionCode.UNABLE_TO_SEND_EMAIL);
         }
+    }
+
+    public boolean verifySuperCode(String email, String inputCode) {
+        if(superCode.equals(inputCode)) {
+            return true;
+        }
+
+        String redisAuthCode = redisTool.getValues(AUTH_CODE_PREFIX + email);
+
+        return redisTool.checkExistsValue(redisAuthCode) && redisAuthCode.equals(inputCode);
     }
 }

@@ -13,6 +13,8 @@ public class MatchingDto {
     @Setter
     @AllArgsConstructor
     public static class Post{
+        private long hostMemberId;
+
         private double latitude;
 
         private double longitude;
@@ -39,6 +41,6 @@ public class MatchingDto {
         private double latitude;
         private double longitude;
         private Matching.MatchStatus matchStatus;
-        private Member hostMember;
+        private long hostMemberId;
     }
 }

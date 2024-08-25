@@ -1,5 +1,8 @@
 package com.togedog.member.mapper;
 
+import com.togedog.exception.BusinessLogicException;
+import com.togedog.exception.ExceptionCode;
+import com.togedog.friend.dto.Dto;
 import com.togedog.member.dto.MemberDto;
 import com.togedog.member.entity.Member;
 import org.mapstruct.AfterMapping;
@@ -25,5 +28,9 @@ public interface MemberMapper {
 
     MemberDto.Response memberToResponseDto(Member member);
 
+    MemberDto.responseEmail memberToResponseId(Member member);
+
     List<MemberDto.Response> membersToResponseDto(List<Member> members);
+
+    Member memberFindIdToMember(MemberDto.findId dto);
 }

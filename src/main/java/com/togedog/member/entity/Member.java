@@ -1,9 +1,13 @@
 package com.togedog.member.entity;
 
 import com.togedog.board.entity.Board;
+import com.togedog.chatRoom.entity.ChatRoomMember;
 import com.togedog.friend.entity.Friend;
+import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
+import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,12 +50,12 @@ public class Member{
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    @Column(name = "member_profile_image")
-    private String profileImage;
-
     @Enumerated(value = EnumType.STRING)
     @Column(name = "member_gender", nullable = false)
     private memberGender gender;
+
+    @Column(name = "member_profile_image")
+    private String profileImage;
 
     @Column(name = "member_report_cnt", nullable = false)
     private int reportCount;
@@ -74,6 +78,19 @@ public class Member{
 
     @OneToMany(mappedBy = "hostMember")
     private List<Matching> matchings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guestMember")
+    private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
+
+    public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
+        matchingStandBys.add(matchingStandBy);
+        if (matchingStandBy.getGuestMember() != this) {
+            matchingStandBy.addMember(this);
+        }
+    }
 
     public void addPet(Pet pet) {
         pets.add(pet);
@@ -105,6 +122,16 @@ public class Member{
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Likes> likes = new ArrayList<>();
+
+    public void setLike(Likes like) {
+        this.likes.add(like);
+        if(like.getMember() != this) {
+            like.setMember(this);
+        }
+    }
 
     @OneToMany(mappedBy = "member")
     private List<Board> boards = new ArrayList<>();
@@ -140,5 +167,13 @@ public class Member{
         memberStatus(String status) {
             this.status = status;
         }
+    }
+    // 엑세스 리프리시 토큰. key 쌍으로
+    // h2 같은 인메모리방식, nosql
+
+    // 화면줌 마커정보 레디스 범위만큼 캐싱
+
+    public Member(String email) {
+        this.email = email;
     }
 }

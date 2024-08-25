@@ -1,17 +1,19 @@
 package com.togedog.likes.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class LikesDto {
     @Getter
-    @AllArgsConstructor
+    @Setter
+    @NoArgsConstructor
     public static class Post{
 
         private long memberId;
-
-        @Setter
         private long boardId;
+
+        public Post(long memberId, long boardId) {
+            this.memberId = memberId;
+            this.boardId = boardId;
+        }
     }
 }

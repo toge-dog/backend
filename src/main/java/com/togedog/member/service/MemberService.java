@@ -1,38 +1,35 @@
 package com.togedog.member.service;
 
+import com.togedog.auth.service.AuthService;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
-import com.togedog.friend.repository.FriendRepository;
-import com.togedog.friend.service.FriendService;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
-import com.togedog.pet.entity.Pet;
-import com.togedog.pet.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private PetRepository petRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthorityUtils authorityUtils;
 
     public Member createMember(Member member) {
-        verifyExistMember(member.getEmail());
+        verifyExistMember(member.getEmail()); // 중복검사 하나씩 빼서 Api 분리 할수도 있음
         verifyExistPhone(member.getPhone());
-        verifyExistNickName(member.getNickName());
+        verifyNickName(member.getNickName());
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);
@@ -45,6 +42,9 @@ public class MemberService {
     }
 
     public Member findMember(Authentication authentication) {
+//        if(authentication == null || !authentication.isAuthenticated()) {
+//            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED);
+//        }
         Member member = extractMemberFromAuthentication(authentication);
         return member;
     }
@@ -57,18 +57,28 @@ public class MemberService {
     public Member updateMember(Member member, Authentication authentication) {
         Member authenticatedMember = extractMemberFromAuthentication(authentication);
 
-//        Member verifedMember = verifiedMember(member.getMemberId());
-
         Optional.ofNullable(member.getPhone())
                 .ifPresent(phone -> authenticatedMember.setPhone(phone));
         Optional.ofNullable(member.getPassword())
                 .ifPresent(password -> authenticatedMember.setPassword(password));
-        Optional.ofNullable(member.getProfileImage())
-                .ifPresent(profileImage -> authenticatedMember.setProfileImage(profileImage));
         Optional.ofNullable(member.getNickName())
                 .ifPresent(nickName -> authenticatedMember.setNickName(nickName));
 
         return memberRepository.save(authenticatedMember);
+    }
+
+    public Member findMemberId(Member member) {
+        Optional<Member> verifiedMember =
+                memberRepository.findByPhone(member.getPhone());
+        Member findedMember = verifiedMember
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        return findedMember;
+    }
+
+    public Member findMemberPassWord(Member member) {
+        memberRepository.findByEmailAndPhoneAndName(member.getEmail(), member.getPhone(), member.getName());
+        return member;
     }
 
     public void deleteMember(Authentication authentication) {
@@ -88,9 +98,9 @@ public class MemberService {
 
     private void verifyExistMember(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
-            if(member.isPresent()) {
-                    throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
-            }
+        if(member.isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
+        }
     }
 
     private void verifyExistPhone(String phone) {
@@ -100,12 +110,21 @@ public class MemberService {
         }
     }
 
-    private void verifyExistNickName(String nickName) {
+    private void verifyNickName(String nickName) {
         Optional<Member> member = memberRepository.findByNickName(nickName);
         if(member.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_EXISTS);
         }
     }
+
+
+//    private void checkDuplicatedEmail(String email) {
+//        Optional<Member> member = memberRepository.findByEmail(email);
+//        if(member.isPresent()) {
+//            log.debug("MemberServiceImpl.checkDuplicatedEmail exception occur email: {}", email);
+//            throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
+//        }
+//    }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {
         /**
@@ -122,9 +141,13 @@ public class MemberService {
 //            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
 //        }
 
+
         String username = (String) authentication.getPrincipal();
         return memberRepository.findByEmail(username)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
+    public List<Member> createChatRoomForCustomEvent(List<Long> memberIds) {
+        return memberRepository.findByMemberIdOrMemberId(memberIds.get(0),memberIds.get(1));
+    }
 }

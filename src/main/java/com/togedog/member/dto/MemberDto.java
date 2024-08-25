@@ -1,6 +1,7 @@
 package com.togedog.member.dto;
 
 import com.togedog.pet.dto.PetDto;
+import com.togedog.pet.entity.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,12 +26,15 @@ public class MemberDto {
 
         @NotNull(message = "비밀번호는 필수 항목입니다.")
         @Size(min = 8, max = 20, message = "비밀번호는 8자에서 20자 사이여야 합니다.")
-        @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?`~]+$",
-                message = "비밀번호는 알파벳, 숫자, 특수문자만 포함할 수 있습니다.")
+        @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?`~]{8,15}$",
+                message = "비밀번호는 8자이상 15자 이하의 알파벳, 숫자, 특수문자만 포함할 수 있습니다.")
         private String password;
 
-        @Pattern(regexp = "^[a-zA-Z가-힣]+$",
-                message = "숫자와 특수문자는 사용할 수 없습니다. 알파벳과 한글만 입력해 주세요.")
+        @NotNull(message = "비밀번호를 한번더 입력해주세요.")
+        private String confirmPassword;
+
+        @Pattern(regexp = "^[a-zA-Z0-9가-힣]{2,8}$",
+                message = "특수문자 제외 2자이상 8자 이하로 입력해주세요.")
         private String nickName;
 
         @Pattern(regexp = "^010-\\d{3,4}-\\d{4}$",
@@ -44,8 +48,6 @@ public class MemberDto {
         private String mainAddress;
 
         private String detailAddress;
-
-        private String petProfileImage;
 
         private List<PetDto.Post> pets = new ArrayList<>();
     }
@@ -86,5 +88,37 @@ public class MemberDto {
         private String nickName;
 
         private String gender;
+
+        private List<PetDto.Response> pets = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class findId {
+        private String phone;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class responseEmail {
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class findPassWord {
+        private String email;
+        private String phone;
+        private String name;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class responsePassWord {
+        private String passWord;
     }
 }

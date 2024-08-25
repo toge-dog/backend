@@ -21,16 +21,16 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/matching")
+@RequestMapping("/matchings")
 @Validated
 @RequiredArgsConstructor
 public class MatchingController {
-    private final static String MATCH_DEFAULT_URL = "/matching";
+    private final static String MATCH_DEFAULT_URL = "/matchings";
     private final MatchingMapper mapper;
     private final MatchingService service;
 
     @PostMapping
-    public ResponseEntity postMatch(@Valid @RequestBody MatchingDto.Post requestBody,
+    public ResponseEntity postMatching(@Valid @RequestBody MatchingDto.Post requestBody,
                                     Authentication authentication) {
         Matching createMatching = service.createMatch(mapper.matchingPostDtoToMatching(requestBody),authentication);
         URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchId());
@@ -38,34 +38,40 @@ public class MatchingController {
     }
 
     @PatchMapping
-    public ResponseEntity patchMember(@Valid @RequestBody MatchingDto.Patch requestBody,
+    public ResponseEntity patchMatching(@Valid @RequestBody MatchingDto.Patch requestBody,
                                       Authentication authentication) {
         Matching updateMatching =
                 service.updateMatch(mapper.matchingPatchDtoToMatching(requestBody),authentication);
-        return new ResponseEntity<>(HttpStatus.OK);
-//        return new ResponseEntity<>(
-//                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(updateMatching)),
-//                HttpStatus.OK);
+//        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(updateMatching)),
+                HttpStatus.OK);
     }
 
-
-    @GetMapping("/{match-id}")
-    public ResponseEntity getMatch(@PathVariable("match-Id")
-                                      @Positive long matchId) {
-        Matching findMatching = service.findVerifiedMatch(matchId);
+    @GetMapping
+    public ResponseEntity getMatching(Authentication authentication) {
+        Matching findMatching = service.findVerifiedMatch(authentication);
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(findMatching)),
                 HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity getMatches(@Positive @RequestParam int page,
-                                       @Positive @RequestParam int size){
-        Page<Matching> pageMatches = service.findMatches(page - 1, size);
-        List<Matching> matchings = pageMatches.getContent();
-
+    @GetMapping("/{email}")
+    public ResponseEntity getMatching(@PathVariable("email") String email) {
+        Matching findMatching = service.findVerifiedMatch(email);
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.matchingToMatchingResponsesDto(matchings), pageMatches),
+                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(findMatching)),
                 HttpStatus.OK);
     }
+
+//    @GetMapping
+//    public ResponseEntity getMatchings(@Positive @RequestParam int page,
+//                                       @Positive @RequestParam int size){
+//        Page<Matching> pageMatches = service.findMatches(page - 1, size);
+//        List<Matching> matchings = pageMatches.getContent();
+//
+//        return new ResponseEntity<>(
+//                new MultiResponseDto<>(mapper.matchingToMatchingResponsesDto(matchings), pageMatches),
+//                HttpStatus.OK);
+//    }
 }

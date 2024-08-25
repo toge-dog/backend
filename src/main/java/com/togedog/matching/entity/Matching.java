@@ -1,5 +1,6 @@
 package com.togedog.matching.entity;
 
+import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,8 @@ import lombok.Setter;
 import com.togedog.audit.Auditable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,7 +31,19 @@ public class Matching extends Auditable {
     @Enumerated(value = EnumType.STRING)
     private MatchStatus matchStatus = MatchStatus.MATCH_HOSTING;
 
-    @ManyToOne
+    @Column(name = "host_member_id")
+    private long hostMemberId;
+
+    @OneToMany(mappedBy = "matching")
+    private List<MatchingStandBy> matchingStandBys = new ArrayList<>();
+    public void addMatchingStandBy(MatchingStandBy matchingStandBy) {
+        matchingStandBys.add(matchingStandBy);
+        if (matchingStandBy.getMatching() != this) {
+            matchingStandBy.addMatching(this);
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member hostMember;
 
