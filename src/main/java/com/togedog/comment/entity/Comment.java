@@ -3,7 +3,11 @@ package com.togedog.comment.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.togedog.board.entity.Board;
 import com.togedog.member.entity.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;

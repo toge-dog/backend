@@ -33,7 +33,7 @@ public class BoardController {
     private final AuthService authService;
 
     @PostMapping("/{board-type}")
-    public ResponseEntity<Void> postBoard(@PathVariable("board-type") String boardType,
+    public ResponseEntity postBoard(@PathVariable("board-type") String boardType,
                                           @Valid @RequestBody BoardDto.Post requestBody,
                                           Authentication authentication) {
         BoardType enumBoardType = service.convertToBoardType(boardType);
@@ -90,7 +90,7 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity getBoards(@RequestParam String boardType,
+    public ResponseEntity getBoards(@RequestParam(name = "type") String boardType,
                                     @Positive @RequestParam int page,
                                     @Positive @RequestParam int size){
         BoardType enumBoardType;

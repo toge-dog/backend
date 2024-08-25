@@ -2,14 +2,13 @@ package com.togedog.board.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.togedog.audit.Auditable;
+import com.togedog.comment.entity.Comment;
 import com.togedog.likes.entity.Likes;
 import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @DiscriminatorColumn
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-
 public class Board extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +41,7 @@ public class Board extends Auditable {
     @OneToMany(mappedBy = "board")
     private List<Likes> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 

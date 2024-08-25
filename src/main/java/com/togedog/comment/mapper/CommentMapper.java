@@ -20,6 +20,7 @@ public interface CommentMapper {
     default CommentDto.Response commentToCommentResponse(Comment comment) {
         return CommentDto.Response.builder()
                 .commentId(comment.getCommentId())
+                .name(comment.getMember().getName())
                 .comment(comment.getComment())
                 .boardId(comment.getBoard().getBoardId())
                 .build();

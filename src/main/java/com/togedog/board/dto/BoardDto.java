@@ -3,9 +3,14 @@ package com.togedog.board.dto;
 import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
 import com.togedog.comment.dto.CommentDto;
+import com.togedog.comment.dto.CommentDto.Response;
 import com.togedog.comment.entity.Comment;
 import com.togedog.member.entity.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -55,6 +60,7 @@ public class BoardDto{
     @Builder
     public static class Response {
         private String title;
+        private String author;
         private String content;
         private String contentImg;
         private String boardType;
@@ -69,6 +75,7 @@ public class BoardDto{
     @NoArgsConstructor
     public static class ResponseBoard {
         private String title;
+        private String author;
         private String content;
         private String contentImg;
         private List<CommentDto.Response> comments;

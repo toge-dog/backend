@@ -50,6 +50,7 @@ public interface BoardMapper {
         BoardDto.ResponseBoard responseBoard = new BoardDto.ResponseBoard();
 
         responseBoard.setTitle(board.getTitle());
+        responseBoard.setAuthor(board.getMember().getName());
         responseBoard.setContent(board.getContent());
         responseBoard.setContentImg(board.getContentImg());
         responseBoard.setBoardType(board.getBoardType().getBoardDescription());
@@ -58,10 +59,13 @@ public interface BoardMapper {
         responseBoard.setViewCount(board.getViewCount());
 
         List<CommentDto.Response> commentList = board.getComments().stream()
+                .filter(c -> c.getCommentStatus() != Comment.CommentStatus.COMMENT_DELETED)
                 .map(c -> {
                     CommentDto.Response commentResponseDto = new CommentDto.Response();
-                    commentResponseDto.setCommentId(c);  // <----- 이부분
-                    commentResponseDto.setComment(c);
+                    commentResponseDto.setCommentId(c.getCommentId());
+                    commentResponseDto.setComment(c.getComment());
+                    commentResponseDto.setName(c.getMember().getName());
+                    commentResponseDto.setBoardId(c.getBoard().getBoardId());
                     return commentResponseDto;
                 })
                 .collect(Collectors.toList());
@@ -79,6 +83,7 @@ public interface BoardMapper {
                 .map(board -> BoardDto.Response
                         .builder()
                         .title(board.getTitle())
+                        .author(board.getMember().getName())
                         .content(board.getContent())
                         .boardType(board.getBoardType().getBoardDescription())
                         .boardStatus(board.getBoardStatus().getStatusDescription())

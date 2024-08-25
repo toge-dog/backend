@@ -30,10 +30,12 @@ public class CommentDto {
     @Getter
     @Setter
     @AllArgsConstructor
+    @Builder
     @NoArgsConstructor
     public static class Response {
         private long commentId;
         private String comment;
+        private String name;
         private long boardId;
     }
 }
