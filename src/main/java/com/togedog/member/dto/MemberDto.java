@@ -1,6 +1,7 @@
 package com.togedog.member.dto;
 
 import com.togedog.pet.dto.PetDto;
+import com.togedog.pet.entity.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -87,6 +88,8 @@ public class MemberDto {
         private String nickName;
 
         private String gender;
+
+        private List<PetDto.Response> pets = new ArrayList<>();
     }
 
     @Getter

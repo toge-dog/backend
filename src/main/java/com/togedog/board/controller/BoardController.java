@@ -51,8 +51,8 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @PatchMapping("/{board-Id}")
-    public ResponseEntity patchBoard(@PathVariable("board-Id") @Positive long boardId,
+    @PatchMapping("/{board-id}")
+    public ResponseEntity patchBoard(@PathVariable("board-id") @Positive long boardId,
                                      @Valid @RequestBody BoardDto.Patch requestBody,
                                      Authentication authentication){
         String email = null;
@@ -72,8 +72,8 @@ public class BoardController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping ("/{board-Id}")
-    public ResponseEntity deleteBoard(@PathVariable("board-Id") @Positive long boardId,
+    @DeleteMapping("/{board-id}")
+    public ResponseEntity deleteBoard(@PathVariable("board-id") @Positive long boardId,
                                       Authentication authentication) {
         String email = null;
         if (authentication != null) {
@@ -89,8 +89,8 @@ public class BoardController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/type/{board-type}")
-    public ResponseEntity getBoards(@PathVariable("board-type") String boardType,
+    @GetMapping
+    public ResponseEntity getBoards(@RequestParam String boardType,
                                     @Positive @RequestParam int page,
                                     @Positive @RequestParam int size){
         BoardType enumBoardType;

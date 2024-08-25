@@ -32,12 +32,9 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-    private final LikesRepository likesRepository;
-    private final MemberService memberService;
-
 
     public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
         return boardRepository.findAllByBoardType(boardType, pageable);
     }
 
@@ -48,6 +45,7 @@ public class BoardService {
             throw new BusinessLogicException(ExceptionCode.INVALID_BOARD_TYPE);
         }
     }
+
     public Board createBoard(Board board, BoardType boardType,Authentication authentication){
         Member member = extractMemberFromAuthentication(authentication);
         board.setMember(member);
@@ -56,8 +54,13 @@ public class BoardService {
     }
 
     public Board patchBoard(Board board, Authentication authentication){
+        extractMemberFromAuthentication(authentication);
         Board findBoard = boardRepository.findById(board.getBoardId())
                         .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
+
+        if(!findBoard.getMember().getEmail().equals(authentication.getName())) {
+            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_MEMBER);
+        }
 
         Optional.ofNullable(board.getBoardType())
                 .ifPresent(boardType -> findBoard.setBoardType(boardType));
@@ -82,8 +85,13 @@ public class BoardService {
     }
 
     public void deleteBoard(long boardId, Authentication authentication){
+        extractMemberFromAuthentication(authentication);
         Board findBoard = findVerifiedBoard(boardId);
+        if(!findBoard.getMember().getEmail().equals(authentication.getName())) {
+            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_MEMBER);
+        }
         findBoard.setBoardStatus(Board.BoardStatus.BOARD_DELETED);
+        boardRepository.save(findBoard);
     }
 
     //특정 id가진 게시물이 데이터베이스에 존재하는지 확인, 존재하지않으면 예외 발생

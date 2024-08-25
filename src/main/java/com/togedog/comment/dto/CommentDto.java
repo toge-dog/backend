@@ -1,40 +1,39 @@
 package com.togedog.comment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
 public class CommentDto {
 
     @Getter
-    @AllArgsConstructor
+    @Setter
+    @NoArgsConstructor
     public static class Post {
         @NotBlank
-        private String content;
+        private String comment;
 
-        @Setter
         private long boardId;
     }
 
-    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
     public static class Patch{
 
         @NotBlank
-        private String content;
+        private String comment;
 
-        @Setter
         private long commentId;
     }
 
     @Getter
     @Setter
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Response {
         private long commentId;
-        private String content;
+        private String comment;
         private long boardId;
     }
 }

@@ -15,5 +15,4 @@ public enum BoardType {
 
     @Getter
     private String boardDescription;
-
 }
