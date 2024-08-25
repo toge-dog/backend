@@ -39,15 +39,19 @@ public class MarkerService {
     public void saveMarker (String markerKey, double latitude, double longitude, String userEmail) {
         try {
             String markerValue =objectMapper.writeValueAsString(new LocationService.Location(latitude, longitude));
-            Boolean findResult = redisTemplate.hasKey(markerKey);
-            if(findResult != null && findResult){
-                redisTemplate.delete(markerKey);
-            }
+            deleteMarker(markerKey);
             redisTemplate.opsForValue().set(markerKey,markerValue);
             redisTemplate.expire(markerKey, TTL_SECONDS, TimeUnit.SECONDS);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
 
+        }
+    }
+
+    public void deleteMarker(String markerKey) {
+        Boolean findResult = redisTemplate.hasKey(markerKey);
+        if(findResult != null && findResult){
+            redisTemplate.delete(markerKey);
         }
     }
 

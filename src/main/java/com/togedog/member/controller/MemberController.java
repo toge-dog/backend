@@ -67,7 +67,7 @@ public class MemberController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/member/my-page")
+    @GetMapping("/member")
     public ResponseEntity getMember(Authentication authentication) {
         String email = null;
         if (authentication != null) {
