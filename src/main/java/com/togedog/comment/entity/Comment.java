@@ -1,15 +1,21 @@
 package com.togedog.comment.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.togedog.board.entity.Board;
 import com.togedog.member.entity.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Builder
+
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,16 +27,18 @@ public class Comment {
     private long commentId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
-
-    @Column(nullable = false)
-    private boolean commentDeleted = false;
+    private String comment;
 
     @CreatedDate
     @Column(name="created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private CommentStatus commentStatus = CommentStatus.COMMENT_POST;
+
+    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
@@ -38,7 +46,17 @@ public class Comment {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    public void update(String content){
-        this.content = content;
+    public void update(String comment){
+        this.comment = comment;
+    }
+
+    @AllArgsConstructor
+    public enum CommentStatus{
+        COMMENT_POST("댓글 활설 상태"),
+        COMMENT_DELETED("댓글 삭제 상태");
+
+        @Getter
+        @Setter
+        private String statusDescription;
     }
 }

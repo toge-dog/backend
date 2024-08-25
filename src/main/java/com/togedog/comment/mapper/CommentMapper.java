@@ -12,10 +12,17 @@ public interface CommentMapper {
         board.setBoardId(requestBody.getBoardId());
         Comment comment = new Comment();
         comment.setBoard(board);
-        comment.setContent(requestBody.getContent());
+        comment.setComment(requestBody.getComment());
         return comment;
     }
 
     Comment commentPatchToComment(CommentDto.Patch requestBody);
-    CommentDto.Response commentToCommentResponse(Comment comment);
+    default CommentDto.Response commentToCommentResponse(Comment comment) {
+        return CommentDto.Response.builder()
+                .commentId(comment.getCommentId())
+                .name(comment.getMember().getName())
+                .comment(comment.getComment())
+                .boardId(comment.getBoard().getBoardId())
+                .build();
+    }
 }

@@ -11,11 +11,9 @@ import javax.persistence.Enumerated;
 
 @Entity
 @DiscriminatorValue("I")
-@Getter@Setter
-
+@Getter
+@Setter
 public class BoardInquiry extends Board {
-
-
     @Enumerated(value = EnumType.STRING)
     private BoardInquiryStatus boardInquiryStatus = BoardInquiryStatus.RECEIVED;
 

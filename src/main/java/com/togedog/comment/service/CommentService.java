@@ -28,16 +28,32 @@ public class CommentService {
     }
 
     public Comment updateComment(Comment comment, Authentication authentication) {
+        extractMemberFromAuthentication(authentication);
         Comment findComment = findVerifiedComment(comment.getCommentId());
-        Optional.ofNullable(comment.getContent())
-                .ifPresent(content -> comment.setContent(content));
+
+        if(!findComment.getMember().getEmail().equals(authentication.getName())) {
+            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_MEMBER);
+        }
+        Optional.ofNullable(comment.getComment())
+                .ifPresent(comments -> findComment.setComment(comments));
+
+        if(comment.getBoard() != null) {
+            findComment.setBoard(comment.getBoard());
+        }
+
         return commentRepository.save(findComment);
     }
 
-    public void deleteComment(Comment comment, Authentication authentication) {
+    public void deleteComment(long commentId, Authentication authentication) {
         Member member = extractMemberFromAuthentication(authentication);
-        comment.setMember(member);
-        commentRepository.delete(comment);
+        Comment verifiedComment = findVerifiedComment(commentId);
+
+        if(!verifiedComment.getMember().getEmail().equals(authentication.getName())) {
+            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_MEMBER);
+        }
+        verifiedComment.setMember(member);
+        verifiedComment.setCommentStatus(Comment.CommentStatus.COMMENT_DELETED);
+        commentRepository.save(verifiedComment);
     }
 
     @Transactional(readOnly = true)
