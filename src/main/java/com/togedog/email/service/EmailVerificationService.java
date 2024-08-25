@@ -5,9 +5,6 @@ import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
 import com.togedog.member.repository.MemberRepository;
 import com.togedog.redis.tool.RedisTool;
-import com.togedog.exception.BusinessLogicException;
-import com.togedog.exception.ExceptionCode;
-import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,14 +33,6 @@ public class EmailVerificationService {
     private long authCodeExpirationMillis;
 
     // 이메일로 인증 코드를 전송하는 메서드
-    private final RedisTool redisTool;
-
-    private final EmailTool emailTool;
-    private static final String AUTH_CODE_PREFIX = "AuthCode ";
-
-    @Value("${spring.mail.auth-code-expiration-millis}")
-    private long authCodeExpirationMillis;
-
     public void sendCodeToEmail(String toEmail) {
         //이메일 중복 검사
         if(memberRepository.existsByEmail(toEmail)) throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
@@ -65,15 +54,6 @@ public class EmailVerificationService {
     }
 
     // 사용자가 제출한 인증 코드가 맞는지 검증하는 메서드
-        //인증코드 생성, 저장 및 이메일 전송
-        String title = "유저 이메일 인증 번호";
-        String authCode = this.createCode();
-        // 이메일 인증 요청 시 인증 번호 Redis에 저장
-        redisTool.setValues(AUTH_CODE_PREFIX + toEmail,
-                authCode, Duration.ofMillis(authCodeExpirationMillis));
-        emailTool.sendEmail(toEmail, title, authCode);
-    }
-
     public boolean verifyCode(String email, String authCode) {
         String redisAuthCode = redisTool.getValues(AUTH_CODE_PREFIX + email);
 
