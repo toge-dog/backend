@@ -1,9 +1,9 @@
 package com.togedog.member.dto;
 
+import com.togedog.member.dto.MemberDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.Email;
 
 @Getter
