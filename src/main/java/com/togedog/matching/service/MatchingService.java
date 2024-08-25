@@ -60,6 +60,9 @@ public class MatchingService {
             CustomEvent event = new CustomEvent(this, DELETE_RELATED_MATCHING_STAND_BY_DATA,
                     findMatching.getHostMember().getMemberId());
             eventPublisher.publishEvent(event);
+            event = new CustomEvent(this, DELETE_MARKER,
+                    findMatching.getHostMember().getEmail());
+            eventPublisher.publishEvent(event);
         }
         Matching result = findMatching;
         return matchingRepository.save(result);
