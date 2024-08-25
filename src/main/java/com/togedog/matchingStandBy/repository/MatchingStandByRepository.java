@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface MatchingStandByRepository extends JpaRepository<MatchingStandBy, Long> {
-    List<MatchingStandBy> findByHostMemberIdAndStatus(long hostMemberId, MatchingStandBy.Status status);
     Optional<MatchingStandBy> findByHostMemberIdAndGuestMemberId(long hostMemberId, long guestMemberId);
     List<MatchingStandBy> findByStatus(MatchingStandBy.Status status);
     Page<MatchingStandBy> findByGuestMember(Member member, Pageable pageable);

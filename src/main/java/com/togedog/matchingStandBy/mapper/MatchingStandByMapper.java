@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface MatchingStandByMapper {
-    MatchingStandBy matchingStandByPostDtoToMatchingStandBy(MatchingStandByDto.Post post);
     MatchingStandBy matchingStandByPatchDtoToMatchingStandBy(MatchingStandByDto.Patch patch);
 
     @Named("toResponseHost")
