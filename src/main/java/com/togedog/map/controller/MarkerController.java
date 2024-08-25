@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,22 +30,26 @@ public class MarkerController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(markers);
     }
-//레디스에 저장하도록
+    //markers에 respnse 에 반환 값 추가를 해야합니다 경도 위도는 잘 받지만 우리가 추가 할거는
+    //userEmail 마커 주인의 key 값을 넣거나
+
+    //레디스에 저장하도록
     //마커 저장을 위는 매칭 데이터 가져오도록
-    @PostMapping("/saveMarker")
+    @PostMapping("/save-marker")
     public ResponseEntity<String> saveMarker(@RequestBody LocationRequest locationRequest, Authentication authentication) {
         double latitude = locationRequest.getLatitude();
         double longitude = locationRequest.getLongitude();
-        String userEmail = authentication.getName();
+        String userEmail = (String) authentication.getPrincipal();
 
         // latitude와 longitude를 문자열로 변환하여 키 구성
-        String markerKey = "marker:" + userEmail + ":" + latitude + ":" + longitude;
+        String markerKey = "marker:" + userEmail;// + ":" + latitude + ":" + longitude;
 
         // 위치 정보를 저장할 때 이메일도 함께 저장
         markerService.saveMarker(markerKey, latitude, longitude, userEmail);
 
         return ResponseEntity.ok("Marker saved successfully");
     }
+
 
     @Getter
     @Setter
@@ -63,3 +66,5 @@ public class MarkerController {
         }
     }
 }
+
+

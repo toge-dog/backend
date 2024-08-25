@@ -23,19 +23,24 @@ public class LocationService {
 
     private static final long TTL_SECONDS = 10000; // 3일 (259,200초)
 
+
+
     public void saveLocation(String locationKey, double latitude, double longitude, String userEmail ) {
         try {
-
-
             String locationValue = objectMapper.writeValueAsString(new Location(latitude, longitude));
             String finalLocationKey = locationKey + ":" + userEmail;
-            redisTemplate.opsForValue().set(locationKey, locationValue);
-            redisTemplate.expire(locationKey, TTL_SECONDS, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(finalLocationKey, locationValue);
+            redisTemplate.expire(finalLocationKey, TTL_SECONDS, TimeUnit.SECONDS);
+            System.out.println("Location saved in Redis with key: " + finalLocationKey);
         } catch (JsonProcessingException e) {
+            System.err.println("Error serializing location data: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Error saving location to Redis: " + e.getMessage());
             e.printStackTrace();
         }
-
     }
+
 
     public Location getLocation(String locationKey) {
         try {
