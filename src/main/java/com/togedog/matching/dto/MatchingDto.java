@@ -1,12 +1,10 @@
 package com.togedog.matching.dto;
 
 import com.togedog.matching.entity.Matching;
-import com.togedog.member.entity.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 public class MatchingDto {
     @Getter
@@ -42,5 +40,24 @@ public class MatchingDto {
         private double longitude;
         private Matching.MatchStatus matchStatus;
         private long hostMemberId;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class ResponseCard {
+        private String memberYearOfBirth;
+        private String memberGender;
+        private String memberNickname;
+        private String petName;
+        private String petProfile;
+        private String petGender;
+        private String petYearOfBirth;
+        private String petBreed;
+        private String petSize;
+        private String petPersonality;
+        private String petNeutered;
+
     }
 }
