@@ -6,7 +6,6 @@ import com.togedog.comment.dto.CommentDto;
 import com.togedog.comment.dto.CommentDto.Response;
 import com.togedog.comment.entity.Comment;
 import com.togedog.member.entity.Member;
-import com.togedog.reply.dto.ReplyDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ import lombok.Builder;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +34,6 @@ public class BoardDto{
         private String content;
 
         private String contentImg;
-
-//        private BoardType boardType;
     }
 
     @Getter
@@ -60,6 +58,7 @@ public class BoardDto{
     @NoArgsConstructor
     @Builder
     public static class Response {
+        private Long boardId;
         private String title;
         private String author;
         private String content;
@@ -75,7 +74,9 @@ public class BoardDto{
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseBoard {
+        private Long boardId;
         private String title;
+        private LocalDateTime createdAt;
         private String author;
         private String content;
         private String contentImg;

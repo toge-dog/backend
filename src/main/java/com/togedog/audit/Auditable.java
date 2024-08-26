@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable {
     @CreatedDate
-    @Column(name = "CREATE_AT", updatable = false)
+    @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
