@@ -6,6 +6,7 @@ import com.togedog.comment.dto.CommentDto;
 import com.togedog.comment.dto.CommentDto.Response;
 import com.togedog.comment.entity.Comment;
 import com.togedog.member.entity.Member;
+import com.togedog.reply.dto.ReplyDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -79,6 +80,7 @@ public class BoardDto{
         private String content;
         private String contentImg;
         private List<CommentDto.Response> comments;
+        private List<ReplyDto.Response> replies;
         private String boardType;
         private String boardStatus;
         private int likesCount;

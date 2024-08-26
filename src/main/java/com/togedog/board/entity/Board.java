@@ -68,7 +68,7 @@ public class Board extends Auditable {
 
     @Column
     @Enumerated(value = EnumType.STRING)
-    private BoardType boardType = BoardType.BOAST;
+    private BoardType boardType;
 
     public void incrementViewCount() {
         this.viewCount++;
