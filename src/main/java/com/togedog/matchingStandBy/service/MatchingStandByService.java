@@ -133,6 +133,14 @@ public class MatchingStandByService {
         }
     }
 
+    public List<MatchingStandBy> findHostMatchingStandBys(Authentication authentication) {
+        Member hostMember = extractMemberFromAuthentication(authentication);
+        return repository.findAllByHostMemberIdAndStatus(hostMember.getMemberId(), MatchingStandBy.Status.STATUS_WAIT);
+    }
+    public List<MatchingStandBy> findGuestMatchingStandBys(Authentication authentication) {
+        Member guestMember = extractMemberFromAuthentication(authentication);
+        return repository.findAllByGuestMemberAndStatus(guestMember, MatchingStandBy.Status.STATUS_WAIT);
+    }
     public Page<MatchingStandBy> findHostMatchingStandBys(int page, int size, Authentication authentication) {
         Member hostMember = extractMemberFromAuthentication(authentication);
         return repository.findByHostMemberId(hostMember.getMemberId(),PageRequest.of(page, size, Sort.by("matchingStandById").descending()));

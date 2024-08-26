@@ -29,23 +29,11 @@ public class MatchingStandByDto {
     @Getter
     @Setter
     @Builder
-    public static class ResponseHost {
+    public static class Responses {
         private long matchingStandById;
         private String status;
-        private String hostNickName;
-        private String hostPetImage;
-        private LocalDateTime createdAt;
-        private LocalDateTime modifiedAt;
-    }
-    @Getter
-    @Setter
-    @Builder
-    public static class ResponseGuest {
-        private long matchingStandById;
-        private String status;
-        private String guestNickName;
-        private String guestPetImage;
-        private LocalDateTime createdAt;
-        private LocalDateTime modifiedAt;
+        private String partnerNickName;
+        private String partnerPetImage;
+        private String createdAt;
     }
 }

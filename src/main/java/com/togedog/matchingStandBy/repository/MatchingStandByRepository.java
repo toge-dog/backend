@@ -20,6 +20,9 @@ public interface MatchingStandByRepository extends JpaRepository<MatchingStandBy
     Page<MatchingStandBy> findByGuestMember(Member member, Pageable pageable);
     Page<MatchingStandBy> findByHostMemberId(long hostMemberId, Pageable pageable);
 
+    List<MatchingStandBy> findAllByHostMemberIdAndStatus(long hostMemberId,MatchingStandBy.Status status);
+    List<MatchingStandBy> findAllByGuestMemberAndStatus(Member member,MatchingStandBy.Status status);
+
     @Query("SELECT m FROM MatchingStandBy m " +
             "WHERE (m.hostMemberId IN (:memberIds) OR m.guestMemberId IN (:memberIds)) " +
             "AND m.status = :status")

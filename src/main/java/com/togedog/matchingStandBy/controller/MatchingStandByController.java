@@ -1,6 +1,7 @@
 package com.togedog.matchingStandBy.controller;
 
 import com.togedog.dto.MultiResponseDto;
+import com.togedog.dto.SingleResponseDto;
 import com.togedog.matchingStandBy.dto.MatchingStandByDto;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.matchingStandBy.mapper.MatchingStandByMapper;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/matchings/stand-by")
 @Validated
+@CrossOrigin(origins = "http://localhost:3000")  // localhost:3000에서 오는 요청을 허용
 @RequiredArgsConstructor
 public class MatchingStandByController {
     private final static String MATCHING_STAND_BY_DEFAULT_URI = "/matchings/stand-by";
@@ -48,28 +50,46 @@ public class MatchingStandByController {
 //                HttpStatus.OK);
     }
     @GetMapping("/host")
-    public ResponseEntity getHostMatchingStandBys(@Positive @RequestParam int page,
-                                                  @Positive @RequestParam int size,
-                                                  Authentication authentication){
-        Page<MatchingStandBy> pageMatchingStandBys =
-                service.findHostMatchingStandBys(page - 1, size,authentication);
-        List<MatchingStandBy> MatchingStandBys = pageMatchingStandBys.getContent();
+    public ResponseEntity getHostMatchingStandBys(Authentication authentication){
+        List<MatchingStandBy> MatchingStandBys =
+                service.findHostMatchingStandBys(authentication);
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseHost(MatchingStandBys),
-                        pageMatchingStandBys),HttpStatus.OK);
+                new SingleResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseHost(MatchingStandBys)),
+                HttpStatus.OK);
     }
-
     @GetMapping("/guest")
-    public ResponseEntity getGuestMatchingStandBys(@Positive @RequestParam int page,
-                                                   @Positive @RequestParam int size,
-                                                   Authentication authentication){
-        Page<MatchingStandBy> pageMatchingStandBys =
-                service.findGuestMatchingStandBys(page - 1, size,authentication);
-        List<MatchingStandBy> MatchingStandBys = pageMatchingStandBys.getContent();
+    public ResponseEntity getGuestMatchingStandBys(Authentication authentication){
+        List<MatchingStandBy> MatchingStandBys =
+                service.findGuestMatchingStandBys(authentication);
 
         return new ResponseEntity<>(
-                new MultiResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseGuest(MatchingStandBys),
-                        pageMatchingStandBys), HttpStatus.OK);
+                new SingleResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseGuest(MatchingStandBys)),
+                HttpStatus.OK);
     }
+//    @GetMapping("/host")
+//    public ResponseEntity getHostMatchingStandBys(@Positive @RequestParam int page,
+//                                                  @Positive @RequestParam int size,
+//                                                  Authentication authentication){
+//        Page<MatchingStandBy> pageMatchingStandBys =
+//                service.findHostMatchingStandBys(page - 1, size,authentication);
+//        List<MatchingStandBy> MatchingStandBys = pageMatchingStandBys.getContent();
+//
+//        return new ResponseEntity<>(
+//                new MultiResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseHost(MatchingStandBys),
+//                        pageMatchingStandBys),HttpStatus.OK);
+//    }
+
+//    @GetMapping("/guest")
+//    public ResponseEntity getGuestMatchingStandBys(@Positive @RequestParam int page,
+//                                                   @Positive @RequestParam int size,
+//                                                   Authentication authentication){
+//        Page<MatchingStandBy> pageMatchingStandBys =
+//                service.findGuestMatchingStandBys(page - 1, size,authentication);
+//        List<MatchingStandBy> MatchingStandBys = pageMatchingStandBys.getContent();
+//
+//        return new ResponseEntity<>(
+//                new MultiResponseDto<>(mapper.matchingStandBysToMatchingStandByDtoResponseGuest(MatchingStandBys),
+//                        pageMatchingStandBys), HttpStatus.OK);
+//    }
 }
