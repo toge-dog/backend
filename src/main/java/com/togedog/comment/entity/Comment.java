@@ -60,7 +60,7 @@ public class Comment {
 
     @AllArgsConstructor
     public enum CommentStatus{
-        COMMENT_POST("댓글 활설 상태"),
+        COMMENT_POST("댓글 활성 상태"),
         COMMENT_DELETED("댓글 삭제 상태");
 
         @Getter

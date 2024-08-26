@@ -1,7 +1,10 @@
 package com.togedog.board.service;
 
+import com.togedog.board.dto.BoardDto;
 import com.togedog.board.entity.Board;
+import com.togedog.board.entity.BoardInquiry;
 import com.togedog.board.entity.BoardType;
+import com.togedog.board.mapper.BoardMapper;
 import com.togedog.board.repository.BoardRepository;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -32,6 +35,7 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final BoardMapper boardMapper;
 
     public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
@@ -46,10 +50,19 @@ public class BoardService {
         }
     }
 
-    public Board createBoard(Board board, BoardType boardType,Authentication authentication){
+//    public Board createBoard(Board board, BoardType boardType,Authentication authentication){
+    public Board createBoard(BoardDto.Post requestBody, BoardType boardType, Authentication authentication) {
         Member member = extractMemberFromAuthentication(authentication);
+
+        Board board = boardMapper.boardDtoPostToBoard(requestBody, boardType);
+
         board.setMember(member);
         board.setBoardType(boardType);
+
+        if (board instanceof BoardInquiry) {
+            ((BoardInquiry) board).setBoardInquiryStatus(BoardInquiry.BoardInquiryStatus.RECEIVED);
+        }
+
         return boardRepository.save(board);
     }
 

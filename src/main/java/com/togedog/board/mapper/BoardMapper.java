@@ -24,24 +24,36 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface BoardMapper {
-    default Board boardDtoPostToBoard(BoardDto.Post requestBody){
+    default Board boardDtoPostToBoard(BoardDto.Post requestBody,BoardType boardType) {
         Member member = new Member();
         Board board;
-        if(requestBody.getBoardType() == BoardType.REVIEW) {
+//        if(requestBody.getBoardType() == BoardType.REVIEW) {
+//            board = new BoardReview();
+//        } else if (requestBody.getBoardType() == BoardType.BOAST) {
+//            board = new BoardBoast();
+//        } else if (requestBody.getBoardType() == BoardType.INQUIRY) {
+//            board = new BoardInquiry();
+//        }else if (requestBody.getBoardType() == BoardType.ANNOUNCEMENT){
+//            board = new BoardAnnouncement();
+//        }else {
+//            board = new Board();
+//        }
+        if (boardType == BoardType.REVIEW) {
             board = new BoardReview();
-        } else if (requestBody.getBoardType() == BoardType.BOAST) {
+        } else if (boardType == BoardType.BOAST) {
             board = new BoardBoast();
-        } else if (requestBody.getBoardType() == BoardType.INQUIRY) {
+        } else if (boardType == BoardType.INQUIRY) {
             board = new BoardInquiry();
-        }else if (requestBody.getBoardType() == BoardType.ANNOUNCEMENT){
+        } else if (boardType == BoardType.ANNOUNCEMENT) {
             board = new BoardAnnouncement();
-        }else {
+        } else {
             board = new Board();
         }
         board.setTitle(requestBody.getTitle());
         board.setContent(requestBody.getContent());
         board.setContentImg(requestBody.getContentImg());
-        board.setBoardType(requestBody.getBoardType());
+//        board.setBoardType(requestBody.getBoardType());
+        board.setBoardType(boardType);
         board.setMember(member);
         return board;
     }

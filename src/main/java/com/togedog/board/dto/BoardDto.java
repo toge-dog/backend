@@ -35,7 +35,7 @@ public class BoardDto{
 
         private String contentImg;
 
-        private BoardType boardType;
+//        private BoardType boardType;
     }
 
     @Getter
@@ -80,7 +80,6 @@ public class BoardDto{
         private String content;
         private String contentImg;
         private List<CommentDto.Response> comments;
-        private List<ReplyDto.Response> replies;
         private String boardType;
         private String boardStatus;
         private int likesCount;
