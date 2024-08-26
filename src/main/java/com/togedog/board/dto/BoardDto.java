@@ -34,6 +34,8 @@ public class BoardDto{
         private String content;
 
         private String contentImg;
+
+        private BoardType boardType;
     }
 
     @Getter
