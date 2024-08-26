@@ -59,6 +59,7 @@ public class BoardDto{
     @NoArgsConstructor
     @Builder
     public static class Response {
+        private long boardId;
         private String title;
         private String author;
         private String content;
@@ -74,6 +75,7 @@ public class BoardDto{
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseBoard {
+        private long boardId;
         private String title;
         private String author;
         private String content;
