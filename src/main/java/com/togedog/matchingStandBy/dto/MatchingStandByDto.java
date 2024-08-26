@@ -26,6 +26,8 @@ public class MatchingStandByDto {
 
     }
 
+    @Getter
+    @Setter
     @Builder
     public static class ResponseHost {
         private long matchingStandById;
@@ -35,6 +37,8 @@ public class MatchingStandByDto {
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
     }
+    @Getter
+    @Setter
     @Builder
     public static class ResponseGuest {
         private long matchingStandById;

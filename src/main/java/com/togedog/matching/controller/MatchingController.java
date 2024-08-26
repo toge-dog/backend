@@ -1,5 +1,6 @@
 package com.togedog.matching.controller;
 
+import com.togedog.board.entity.Board;
 import com.togedog.dto.MultiResponseDto;
 import com.togedog.dto.SingleResponseDto;
 import com.togedog.matching.dto.MatchingDto;
@@ -33,7 +34,7 @@ public class MatchingController {
     public ResponseEntity postMatching(@Valid @RequestBody MatchingDto.Post requestBody,
                                     Authentication authentication) {
         Matching createMatching = service.createMatch(mapper.matchingPostDtoToMatching(requestBody),authentication);
-        URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchId());
+        URI location = UriCreator.createUri(MATCH_DEFAULT_URL, createMatching.getMatchingId());
         return ResponseEntity.created(location).build();
     }
 
@@ -74,4 +75,5 @@ public class MatchingController {
 //                new MultiResponseDto<>(mapper.matchingToMatchingResponsesDto(matchings), pageMatches),
 //                HttpStatus.OK);
 //    }
+
 }

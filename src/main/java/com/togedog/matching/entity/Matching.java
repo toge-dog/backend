@@ -19,7 +19,7 @@ import java.util.List;
 public class Matching extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long matchId;
+    private long matchingId;
 
     @Column(name = "latitude",nullable = false)
     private double latitude;

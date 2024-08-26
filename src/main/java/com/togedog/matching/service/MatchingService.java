@@ -1,5 +1,7 @@
 package com.togedog.matching.service;
 
+import com.togedog.board.entity.Board;
+import com.togedog.board.entity.BoardType;
 import com.togedog.eventListener.CustomEvent;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -65,7 +68,7 @@ public class MatchingService {
     }
 
     public void updateMatchForCustomEvent(Long hostMemberId, Long guestMemberId) {
-        List<Matching> findMatchings = matchingRepository.findByHostMemberIdOrHostMemberId(hostMemberId, guestMemberId);
+        List<Matching> findMatchings = matchingRepository.findAllByHostMemberIdOrHostMemberId(hostMemberId, guestMemberId);
 
         // 상태가 변경된 경우에만 저장
         List<Matching> updatedMatchings = findMatchings.stream()

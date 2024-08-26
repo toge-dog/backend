@@ -55,9 +55,9 @@ public class MatchingStandBy extends Auditable  {
 
     @AllArgsConstructor
     public enum Status{
-        STATUS_WAIT(1,"응답 대기 상태"),
+        STATUS_WAIT(1,"응답 대기"),
         STATUS_FAIL(2,"거부 상태"),
-        STATUS_SUCCESS(3,"매칭 성사 완료");
+        STATUS_SUCCESS(3,"매칭 성공");
 
         @Getter
         private int statusNumber;

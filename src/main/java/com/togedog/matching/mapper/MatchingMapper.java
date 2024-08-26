@@ -14,7 +14,7 @@ public interface MatchingMapper {
     Matching matchingPatchDtoToMatching(MatchingDto.Patch patch);
     default MatchingDto.Response matchingToMatchingResponseDto(Matching matching){
         return new MatchingDto.Response(
-                matching.getMatchId(),
+                matching.getMatchingId(),
                 matching.getLatitude(),
                 matching.getLongitude(),
                 matching.getMatchStatus(),

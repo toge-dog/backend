@@ -19,7 +19,8 @@ public interface MatchingStandByMapper {
                  .map(matchingStandBy -> MatchingStandByDto.ResponseHost
                          .builder()
                          .matchingStandById(matchingStandBy.getMatchingStandById())
-                         .status(matchingStandBy.getStatus().getStatusDescription())
+                         .status(matchingStandBy.getStatus().getStatusNumber() == 1 ? "수락 버튼" :
+                                 matchingStandBy.getStatus().getStatusDescription())
                          .hostNickName(matchingStandBy.getMatching().getHostMember().getNickName())
                          .hostPetImage(matchingStandBy.getMatching().getHostMember().getProfileImage())
                          .createdAt(matchingStandBy.getCreatedAt())
