@@ -12,5 +12,5 @@ public interface MatchingRepository extends JpaRepository<Matching, Long>{
     Optional<Matching> findByHostMember_EmailAndMatchStatus(String string, Matching.MatchStatus matchStatus);
     Optional<Matching> findByHostMember(Member member);
 
-    List<Matching> findByHostMemberIdOrHostMemberId(long hostMemberId, long guestMemberId);
+    List<Matching> findAllByHostMemberIdOrHostMemberId(long hostMemberId, long guestMemberId);
 }
