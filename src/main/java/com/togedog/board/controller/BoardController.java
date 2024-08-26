@@ -37,7 +37,8 @@ public class BoardController {
                                           @Valid @RequestBody BoardDto.Post requestBody,
                                           Authentication authentication) {
         BoardType enumBoardType = service.convertToBoardType(boardType);
-        Board createBoard = service.createBoard(mapper.boardDtoPostToBoard(requestBody),enumBoardType, authentication);
+//        Board createBoard = service.createBoard(mapper.boardDtoPostToBoard(requestBody),enumBoardType, authentication);
+        Board createBoard = service.createBoard(requestBody, enumBoardType, authentication);
         URI location = UriCreator.createUri(BOARD_DEF_URL, createBoard.getBoardId());
         return ResponseEntity.created(location).build();
     }
