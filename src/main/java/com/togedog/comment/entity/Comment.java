@@ -1,8 +1,10 @@
 package com.togedog.comment.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.togedog.board.entity.Board;
 import com.togedog.member.entity.Member;
+import com.togedog.reply.entity.Reply;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -45,6 +49,10 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Reply> replies = new ArrayList<>();
 
     public void update(String comment){
         this.comment = comment;

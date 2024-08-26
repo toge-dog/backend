@@ -2,11 +2,13 @@ package com.togedog.member.entity;
 
 import com.togedog.board.entity.Board;
 import com.togedog.chatRoom.entity.ChatRoomMember;
+import com.togedog.comment.entity.Comment;
 import com.togedog.friend.entity.Friend;
 import com.togedog.likes.entity.Likes;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.pet.entity.Pet;
+import com.togedog.reply.entity.Reply;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -142,6 +144,12 @@ public class Member{
             board.setMember(this);
         }
     }
+
+    @OneToMany(mappedBy = "member")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Reply> replies = new ArrayList<>();
 
     public enum memberGender {
         M("남성"),
