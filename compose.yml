@@ -21,10 +21,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      my-db:
-        condition: service_healthy
-      my-cache-server:
-        condition: service_healthy
+      - my-db
+      - my-cache-server
 
   my-db:
     image: mysql:8.0
