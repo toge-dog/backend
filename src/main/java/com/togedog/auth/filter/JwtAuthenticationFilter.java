@@ -27,12 +27,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtTokenizer jwtTokenizer;
 
     /**
-    * 사용자가 로그인 할 때 실행되는 메서드, 사용자의 email과 비밀번호를 읽어와서 token을 만든 후 사용자가 맞는지 판단.
-    *
-    * @param source JSON 형식의 문자열
-    * @return 사용자가 일치 여부에 따른 메서드 실행 후 반환되는 값
-    * @author Tizesin(신민준)
-    */
+     * 사용자가 로그인 할 때 실행되는 메서드, 사용자의 email과 비밀번호를 읽어와서 token을 만든 후 사용자가 맞는지 판단.
+     *
+     * @param source JSON 형식의 문자열
+     * @return 사용자가 일치 여부에 따른 메서드 실행 후 반환되는 값
+     * @author Tizesin(신민준)
+     */
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -46,13 +46,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     /**
-    * attemptAuthentication에서 사용자가 맞다고 판단되면 실행되는 메서드
-    *
-    * @param source JSON 형식의 문자열
-    * @return 반환값 내용
-    * @throws 예외처리
-    * @author Tizesin(신민준)
-    */
+     * attemptAuthentication에서 사용자가 맞다고 판단되면 실행되는 메서드
+     *
+     * @param source JSON 형식의 문자열
+     * @return 반환값 내용
+     * @throws 예외처리
+     * @author Tizesin(신민준)
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Member member = (Member) authResult.getPrincipal();
 
         String accessToken = delegateAccessToken(member);
-        String refreshToken = delegateRefreshToken(member);
+        String refreshToken = delegateRefreshToken(member, accessToken);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
@@ -70,12 +70,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     /**
-    * AccessToken 생성하는 메서드
-    *
-    * @param member의 정보
-    * @return AccessToken을 만들어서 반환
-    * @author Tizesin(신민준)
-    */
+     * AccessToken 생성하는 메서드
+     *
+     * @param member의 정보
+     * @return AccessToken을 만들어서 반환
+     * @author Tizesin(신민준)
+     */
     private String delegateAccessToken(Member member) {
         Map<String, Object> claims = new HashMap<>();
 //        claims.put("memberId", member.getMemberId());
@@ -97,9 +97,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      *
      * @param member의 정보
      * @return RefreshToken을 만들어서 반환
-     * @author Tizesin(신민준)
+     * @author Tizesin(신민준), 황진혁
      */
-    private String delegateRefreshToken(Member member) {
+    private String delegateRefreshToken(Member member, String accessToken) {
         // 수정
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", member.getEmail());
@@ -110,7 +110,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 수정
         String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
-        String accessToken = jwtTokenizer.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
+//        String accessToken = jwtTokenizer.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
         String refreshToken = jwtTokenizer.generateRefreshToken(subject, expiration, base64EncodedSecretKey, accessToken);
 
         return refreshToken;

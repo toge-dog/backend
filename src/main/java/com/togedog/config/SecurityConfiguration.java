@@ -41,11 +41,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
-    @Value("${spring.security.oauth2.client.registration.google.clientId}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.clientSecret}")
-    private String clientSecret;
 
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils; // 추가
@@ -79,8 +74,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
-                )
-                .oauth2Login(withDefaults());
+                );
         return http.build();
     }
 //    @Bean
