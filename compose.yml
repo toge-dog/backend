@@ -17,6 +17,7 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - KAKAO_API_KEY=${KAKAO_API_KEY}
+      - MAIL_ADDRESS_ADMIN=${MAIL_ADDRESS_ADMIN}
     ports:
       - "8080:8080"
     depends_on:
