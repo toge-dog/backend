@@ -7,7 +7,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://backend-my-db-1:3306/mydb
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - SPRING_REDIS_HOST=my-cache-server
+      - SPRING_REDIS_HOST=backend-my-cache-server-1
       - SPRING_REDIS_PORT=6379
       - SMTP_USERNAME=${SMTP_USERNAME}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
@@ -21,18 +21,24 @@ services:
     depends_on:
       - backend-my-db-1
       - backend-my-cache-server-1
+    networks:
+      - backend-network
 
   backend-my-db-1:
     image: mysql:8.0
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 12341234
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: mydb
+    volumes:
+      - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12341234"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
       interval: 5s
       retries: 10
+    networks:
+      - backend-network
 
   backend-my-cache-server-1:
     image: redis:latest
@@ -42,3 +48,12 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 10
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
