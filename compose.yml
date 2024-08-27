@@ -2,15 +2,13 @@ version: '3.8'
 
 services:
   my-server:
-    image: gwanghui/spring-cicd:latest
+    image: gwanghui/spring-cicd:b485287
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/mydb
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_REDIS_HOST=my-cache-server
       - SPRING_REDIS_PORT=6379
-      - SECURITY_OAUTH2_CLIENT_ID=${SECURITY_OAUTH2_CLIENT_ID}
-      - SECURITY_OAUTH2_CLIENT_PASSWORD=${SECURITY_OAUTH2_CLIENT_PASSWORD}
       - SMTP_USERNAME=${SMTP_USERNAME}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - JWT_KEY=${JWT_KEY}
