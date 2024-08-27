@@ -27,14 +27,14 @@ spring:
       client:
         registration:
           google:
-            client-id: ${secret.SECURITY_OAUTH2_CLIENT_ID}
-            client-secret: ${secret.SECURITY_OAUTH2_CLIENT_PASSWORD}
+            client-id: ${SECURITY_OAUTH2_CLIENT_ID}
+            client-secret: ${SECURITY_OAUTH2_CLIENT_PASSWORD}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${secret.SMTP_USERNAME}
-    password: ${secret.SMTP_PASSWORD}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -59,15 +59,15 @@ jwt:
   refresh-token-expiration-minutes: 420
 
 email:
-  super-code: ${secret.SUPER_CODE}
+  super-code: ${SUPER_CODE}
 
 cloud:
   aws:
     s3:
       bucket: togedog-image
     credentials:
-      access-key: ${secret.S3_ACCESS_KEY}
-      secret-key: ${secret.S3_SECRET_KEY}
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
     region:
       static: ap-northeast-2
     stack:
@@ -75,4 +75,4 @@ cloud:
 
 kakao:
   api:
-    key: ${secret.KAKAO_API_KEY}
+    key: ${KAKAO_API_KEY}
