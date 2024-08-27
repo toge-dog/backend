@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   my-server:
-    image: gwanghui/spring-cicd:b485287
+    image: gwanghui/spring-cicd:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/mydb
       - SPRING_DATASOURCE_USERNAME=root
