@@ -48,14 +48,7 @@ jobs:
           AWS_REGION: ap-northeast-2
         run: |
           aws ssm send-command \
-            --instance-ids i-03c4557d574acc3e3 \
+            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
-            --parameters 'commands=[
-              "cd backend",
-              "if docker-compose ps -q server | grep -q .; then",
-              "  docker-compose down",  # 기존 컨테이너 및 네트워크를 종료 및 정리
-              "fi",
-              "docker-compose pull",
-              "docker-compose up -d"
-            ]' \
+            --parameters 'commands=["cd backend", "if docker-compose ps -q server | grep -q .; then", "docker-compose down", "fi", "docker-compose pull", "docker-compose up -d"]' \
             --output text
