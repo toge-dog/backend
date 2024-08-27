@@ -133,14 +133,23 @@ public class MatchingStandByService {
         }
     }
 
-    public Page<MatchingStandBy> findHostMatchingStandBys(int page, int size, Authentication authentication) {
+    public List<MatchingStandBy> findHostMatchingStandBys(Authentication authentication) {
         Member hostMember = extractMemberFromAuthentication(authentication);
-        return repository.findByHostMemberId(hostMember.getMemberId(),PageRequest.of(page, size, Sort.by("matchingStandById").descending()));
+        return repository.findAllByHostMemberIdAndStatus(hostMember.getMemberId(), MatchingStandBy.Status.STATUS_WAIT);
     }
-
-    public Page<MatchingStandBy> findGuestMatchingStandBys(int page, int size, Authentication authentication) {
+    public List<MatchingStandBy> findGuestMatchingStandBys(Authentication authentication) {
         Member guestMember = extractMemberFromAuthentication(authentication);
-        return repository.findByGuestMember(guestMember,PageRequest.of(page, size, Sort.by("matchingStandById").descending()));
+        return repository.findAllByGuestMemberAndStatus(guestMember, MatchingStandBy.Status.STATUS_WAIT);
+    }
+    public boolean findMatchAlreadyExists(long matchingId, Authentication authentication) {
+        Member guestMember = extractMemberFromAuthentication(authentication);
+        Matching matching = matchingRepository.findById(matchingId).orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
+        return repository.findByHostMemberIdAndGuestMemberAndStatus(
+                matching.getHostMemberId(),
+                guestMember,
+                MatchingStandBy.Status.STATUS_WAIT
+        ).isPresent();
     }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {
