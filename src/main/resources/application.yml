@@ -27,8 +27,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${SECURITY_OAUTH2_CLIENT_ID}
-            client-secret: ${SECURITY_OAUTH2_CLIENT_PASSWORD}
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTSECRET}
 
   mail:
     host: smtp.gmail.com
