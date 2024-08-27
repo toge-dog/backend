@@ -1,6 +1,5 @@
 package com.togedog.member.service;
 
-import com.togedog.auth.service.AuthService;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
