@@ -3,6 +3,14 @@ version: '3.8'
 services:
   my-server:
     build: .
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/mydb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12341234
+      - SPRING_REDIS_HOST=my-cache-server
+      - SPRING_REDIS_PORT=6379
     ports:
       - "8080:8080"
     depends_on:
@@ -10,12 +18,6 @@ services:
         condition: service_healthy
       my-cache-server:
         condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://my-db:3306/mydb
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 12341234
-      SPRING_REDIS_HOST: my-cache-server
-      SPRING_REDIS_PORT: 6379
 
   my-db:
     image: mysql:8.0
