@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  my-server:
+  backend-my-server-1:
     image: gwanghui/spring-cicd:latest
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/mydb
+      - SPRING_DATASOURCE_URL=jdbc:mysql://backend-my-db-1:3306/mydb
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_REDIS_HOST=my-cache-server
@@ -19,10 +19,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - my-db
-      - my-cache-server
+      - backend-my-db-1
+      - backend-my-cache-server-1
 
-  my-db:
+  backend-my-db-1:
     image: mysql:8.0
     ports:
       - "3306:3306"
@@ -34,7 +34,7 @@ services:
       interval: 5s
       retries: 10
 
-  my-cache-server:
+  backend-my-cache-server-1:
     image: redis:latest
     ports:
       - "6379:6379"
