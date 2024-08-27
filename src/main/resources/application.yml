@@ -27,8 +27,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTID}
-            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTSECRET}
+            client-id: ${SECURITY_OAUTH2_CLIENT_ID}
+            client-secret: ${SECURITY_OAUTH2_CLIENT_PASSWORD}
 
   mail:
     host: smtp.gmail.com
@@ -43,15 +43,13 @@ spring:
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
     auth-code-expiration-millis: 600000
+    address:
+      admin: tlsalswns0o@naver.com
 
 logging:
   level:
     com.amazonaws.util.EC2MetadataUtils: error
     org.hibernate.SQL: debug
-
-mail:
-  address:
-    admin: tlsalswns0o@naver.com
 
 jwt:
   key: ${JWT_KEY}
