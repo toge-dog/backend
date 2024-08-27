@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://backend-my-db-1:3306/mydb
     username: root
-    password: ${DB_PASSWORD}
+    password: ${MYSQL_ROOT_PASSWORD}
 
   jpa:
     open-in-view: true
