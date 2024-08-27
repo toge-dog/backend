@@ -1,28 +1,39 @@
+version: '3.8'
+
 services:
   my-server:
     build: .
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       my-db:
         condition: service_healthy
       my-cache-server:
         condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://my-db:3306/mydb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12341234
+      SPRING_REDIS_HOST: my-cache-server
+      SPRING_REDIS_PORT: 6379
+
   my-db:
-    image: mysql
+    image: mysql:8.0
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 12341234
+      MYSQL_DATABASE: mydb
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12341234"]
       interval: 5s
       retries: 10
+
   my-cache-server:
-    image: redis
+    image: redis:latest
     ports:
-      - 6379:6379
+      - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 10
