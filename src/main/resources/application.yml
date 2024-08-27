@@ -38,7 +38,7 @@ spring:
 
 mail:
   address:
-    admin: ${MAIL_ADDRESS_ADMIN:default@admin.com}
+    admin: ${MAIL_ADDRESS_ADMIN}
 
 
 logging:
