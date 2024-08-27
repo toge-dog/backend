@@ -3,6 +3,7 @@ spring:
     redis:
       host: my-cache-server
       port: 6379
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://my-db:3306/mydb
@@ -26,14 +27,14 @@ spring:
       client:
         registration:
           google:
-            clientId: ${{ secrets.SECURITY_OAUTH2_CLIENT_ID }}
-            clientSecret: ${{ secrets.SECURITY_OAUTH2_CLIENT_PASSWORD }}
+            client-id: ${secret.SECURITY_OAUTH2_CLIENT_ID}
+            client-secret: ${secret.SECURITY_OAUTH2_CLIENT_PASSWORD}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${{ secrets.SMTP_USERNAME }}
-    password: ${{ secrets.SMTP_PASSWORD }}
+    username: ${secret.SMTP_USERNAME}
+    password: ${secret.SMTP_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -45,10 +46,7 @@ spring:
 
 logging:
   level:
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
+    com.amazonaws.util.EC2MetadataUtils: error
     org.hibernate.SQL: debug
 
 mail:
@@ -56,20 +54,20 @@ mail:
     admin: tlsalswns0o@naver.com
 
 jwt:
-  key: ${{ secrets.JWT_KEY }}
+  key: ${secret.JWT_KEY}
   access-token-expiration-minutes: 30
   refresh-token-expiration-minutes: 420
 
 email:
-  super-code: ${{ secrets.SUPER_CODE }}
+  super-code: ${secret.SUPER_CODE}
 
 cloud:
   aws:
     s3:
       bucket: togedog-image
     credentials:
-      accessKey: ${{ secrets.S3_ACCESS_KEY }}
-      secretKey: ${{ secrets.S3_SECRET_KEY }}
+      access-key: ${secret.S3_ACCESS_KEY}
+      secret-key: ${secret.S3_SECRET_KEY}
     region:
       static: ap-northeast-2
     stack:
@@ -77,4 +75,4 @@ cloud:
 
 kakao:
   api:
-    key: ${{ secrets.KAKAO_API_KEY}}
+    key: ${secret.KAKAO_API_KEY}
