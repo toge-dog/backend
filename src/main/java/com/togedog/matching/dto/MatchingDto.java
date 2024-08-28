@@ -47,6 +47,7 @@ public class MatchingDto {
     @AllArgsConstructor
     @Builder
     public static class ResponseCard {
+        private long matchingId;
         private String memberYearOfBirth;
         private String memberGender;
         private String memberNickname;

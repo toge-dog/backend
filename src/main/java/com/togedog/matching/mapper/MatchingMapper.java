@@ -27,6 +27,7 @@ public interface MatchingMapper {
         List<Pet> pets = member.getPets();
         Pet pet = pets.get(0);
         return new MatchingDto.ResponseCard(
+                matching.getMatchId(),
                 member.getBirth().substring(0, 4),
                 member.getGender().getGender(),
                 member.getNickName(),

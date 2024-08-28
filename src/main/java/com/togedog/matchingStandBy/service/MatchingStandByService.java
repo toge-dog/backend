@@ -92,6 +92,12 @@ public class MatchingStandByService {
                     event = new CustomEvent(this, CREATE_CHAT_ROOM, memberIds);
                     eventPublisher.publishEvent(event);
                     extractedDataAndChangeStatusToFail(memberIds,MatchingStandBy.Status.STATUS_WAIT);
+                    event = new CustomEvent(this, DELETE_MARKER,
+                            findMatchingStandBy.getGuestMember().getEmail());
+                    eventPublisher.publishEvent(event);
+                    event = new CustomEvent(this, DELETE_MARKER,
+                            findMatchingStandBy.getMatching().getHostMember().getEmail());
+                    eventPublisher.publishEvent(event);
                 }
                 return repository.save(findMatchingStandBy);
             } else {

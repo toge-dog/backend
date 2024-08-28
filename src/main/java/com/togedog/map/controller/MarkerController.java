@@ -22,7 +22,7 @@ public class MarkerController {
     }
 
     @GetMapping("/markers")
-    public ResponseEntity<List<MarkerService.Marker>> getMarkers() {
+    public ResponseEntity<List<MarkerService.Marker>> getMarkers(Authentication authentication) {
         // Redis에서 마커 키들을 가져와 해당 마커 정보를 반환
         Set<String> markerKeys = markerService.getKeysByPattern("marker:*");
         List<MarkerService.Marker> markers = markerKeys.stream()
