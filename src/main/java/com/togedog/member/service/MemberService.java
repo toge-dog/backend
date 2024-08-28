@@ -23,7 +23,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final CustomAuthorityUtils authorityUtils;
+    private final CustomAuthorityUtils authorityUtils;
 
     public Member createMember(Member member) {
         verifyExistMember(member.getEmail()); // 중복검사 하나씩 빼서 Api 분리 할수도 있음
@@ -32,8 +32,8 @@ public class MemberService {
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);
-//        List<String> roles = authorityUtils.createRoles(member.getEmail());
-//        member.setRoles(roles);
+        List<String> roles = authorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
 
         Member verifiedMember = memberRepository.save(member);
 
