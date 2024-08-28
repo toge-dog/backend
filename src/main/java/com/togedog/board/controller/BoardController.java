@@ -34,11 +34,14 @@ public class BoardController {
 
     @PostMapping("/{board-type}")
     public ResponseEntity postBoard(@PathVariable("board-type") String boardType,
-                                          @Valid @RequestBody BoardDto.Post requestBody,
-                                          Authentication authentication) {
-        BoardType enumBoardType = service.convertToBoardType(boardType);
-        Board createBoard = service.createBoard(mapper.boardDtoPostToBoard(requestBody),enumBoardType, authentication);
+                                    @Valid @RequestBody BoardDto.Post requestBody,
+                                    Authentication authentication) {
+        BoardType enumBoardType =
+                service.convertToBoardType(boardType);
+        Board createBoard =
+                service.createBoard(mapper.boardDtoPostToBoard(requestBody), enumBoardType, authentication);
         URI location = UriCreator.createUri(BOARD_DEF_URL, createBoard.getBoardId());
+
         return ResponseEntity.created(location).build();
     }
 
@@ -46,6 +49,7 @@ public class BoardController {
     public ResponseEntity getBoard(@PathVariable("board-id")
                                    @Positive long boardId) {
         Board findBoard = service.getBoard(service.findVerifiedBoard(boardId));
+
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.boardToBoardDtoResponse(findBoard)),
                 HttpStatus.OK);
@@ -67,6 +71,7 @@ public class BoardController {
         }
         requestBody.setBoardId(boardId);
         Board patchBoard = service.patchBoard(mapper.boardDtoPatchToBoard(requestBody), authentication);
+
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.boardToBoardDtoResponse(patchBoard)),
                 HttpStatus.OK);
@@ -86,6 +91,7 @@ public class BoardController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         service.deleteBoard(boardId, authentication);
+
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -101,6 +107,7 @@ public class BoardController {
         }
         Page<Board> pageBoards = service.findBoardsByType(enumBoardType, page - 1, size);
         List<Board> boards = pageBoards.getContent();
+
         return new ResponseEntity<>(
                 new MultiResponseDto<>(mapper.boardToBoardDtoResponses(boards), pageBoards),
                 HttpStatus.OK);

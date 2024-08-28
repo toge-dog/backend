@@ -9,9 +9,11 @@ public class Dto {
     @Setter
     @NoArgsConstructor
     public static class Response {
+        private long id;
         private String friendEmail;
         private String friendName;
         private String friendNickName;
         private String friendPhone;
+        private String friendBirth;
     }
 }

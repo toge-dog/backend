@@ -25,13 +25,21 @@ public class FriendController {
     private final FriendMapper friendMapper;
     private final AuthService authService;
 
-    @GetMapping("/{friend-email}/{member-email}")
-    public ResponseEntity getFriend(@PathVariable("friend-email") String friendEmail,
-                                    @PathVariable("member-email") String memberEmail) {
-        Friend friend = friendService.getFriend(friendEmail, memberEmail);
-        Dto.Response response = friendMapper.friendToResponse(friend);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+//    @GetMapping("/{friend-email}/{member-email}")
+//    public ResponseEntity getFriend(@PathVariable("friend-email") String friendEmail,
+//                                    @PathVariable("member-email") String memberEmail) {
+//        Friend friend = friendService.getFriend(friendEmail, memberEmail);
+//        Dto.Response response = friendMapper.friendToResponse(friend);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
+
+    @GetMapping("/{member-email}")
+    public ResponseEntity getFriendRequests(@PathVariable("member-email") String memberEmail) {
+        List<Friend> friendRequests = friendService.getFriendRequests(memberEmail);
+        List<Dto.Response> responses = friendMapper.friendsToResponses(friendRequests);
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
+
 
 //    @GetMapping
 //    public ResponseEntity getFriends(@RequestParam @Positive int page,

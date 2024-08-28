@@ -15,6 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface FriendMapper {
     Dto.Response friendToResponse(Friend friend);
+
     default List<Dto.Response> friendsToResponse(List<Member> friends) {
         List<Dto.Response> result = new ArrayList<>();
         for (Member member : friends) {
@@ -23,8 +24,24 @@ public interface FriendMapper {
             response.setFriendName(member.getName());
             response.setFriendNickName(member.getNickName());
             response.setFriendPhone(member.getPhone());
+            response.setFriendBirth(member.getBirth());
             result.add(response);
         }
         return result;
+    }
+
+    default List<Dto.Response> friendsToResponses(List<Friend> friends) {
+        List<Dto.Response> receipientEmailList = new ArrayList<>();
+        for (Friend friend : friends) {
+            Member member = friend.getMember();
+            Dto.Response response = new Dto.Response();
+            response.setId(friend.getFriendId()); //friendId
+            response.setFriendEmail(member.getEmail());
+            response.setFriendName(member.getName());
+            response.setFriendNickName(member.getNickName());
+            response.setFriendPhone(member.getPhone());
+            receipientEmailList.add(response);
+        }
+        return receipientEmailList;
     }
 }

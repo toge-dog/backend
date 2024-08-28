@@ -9,10 +9,10 @@ import com.togedog.auth.handler.MemberAuthenticationSuccessHandler;
 import com.togedog.auth.jwt.JwtTokenizer;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.member.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,10 +21,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -41,12 +37,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
-    @Value("${spring.security.oauth2.client.registration.google.clientId}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.clientSecret}")
-    private String clientSecret;
-
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils; // 추가
     private final MemberRepository memberRepository; // 추가
@@ -78,9 +68,9 @@ public class SecurityConfiguration {
                 .apply(new CustomFilterConfigurer())   // (1)
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("USER", "ADMIN")
                         .anyRequest().permitAll()
-                )
-                .oauth2Login(withDefaults());
+                );
         return http.build();
     }
 //    @Bean
@@ -147,19 +137,20 @@ public class SecurityConfiguration {
             AuthenticationManager authenticationManager =
                     builder.getSharedObject(AuthenticationManager.class);
 
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
+            JwtAuthenticationFilter jwtAuthenticationFilter =
+                    new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
             jwtAuthenticationFilter.setFilterProcessesUrl("/login");
-            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler(memberRepository));
-            jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(
+                    new MemberAuthenticationSuccessHandler(memberRepository));
+            jwtAuthenticationFilter.setAuthenticationFailureHandler(
+                    new MemberAuthenticationFailureHandler());
 
-            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate); // 추가
-
+            JwtVerificationFilter jwtVerificationFilter =
+                    new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate); // 추가
 
             builder
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class)
-                    .addFilterAfter(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class);
-
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
         }
 
     }

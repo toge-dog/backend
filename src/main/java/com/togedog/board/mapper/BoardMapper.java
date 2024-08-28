@@ -59,7 +59,8 @@ public interface BoardMapper {
         responseBoard.setLikesCount(board.getLikesCount() != null ? board.getLikesCount() : 0);
         responseBoard.setViewCount(board.getViewCount() != null ? board.getViewCount() : 0);
 
-        List<CommentDto.Response> commentList = board.getComments().stream()
+        List<CommentDto.Response> commentList = board.getComments()
+                .stream()
                 .filter(c -> c.getCommentStatus() != Comment.CommentStatus.COMMENT_DELETED)
                 .map(c -> {
                     CommentDto.Response commentResponseDto = new CommentDto.Response();
@@ -94,5 +95,4 @@ public interface BoardMapper {
                         .build())
                 .collect(Collectors.toList());
     }
-
 }
