@@ -1,6 +1,5 @@
 package com.togedog.member.service;
 
-import com.togedog.auth.service.AuthService;
 import com.togedog.auth.utils.CustomAuthorityUtils;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,6 +34,7 @@ public class MemberService {
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);
+
         List<String> roles = authorityUtils.createRoles(member.getEmail());
         member.setRoles(roles);
 
@@ -42,9 +44,6 @@ public class MemberService {
     }
 
     public Member findMember(Authentication authentication) {
-//        if(authentication == null || !authentication.isAuthenticated()) {
-//            throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED);
-//        }
         Member member = extractMemberFromAuthentication(authentication);
         return member;
     }
@@ -87,15 +86,6 @@ public class MemberService {
         memberRepository.save(authenticatedMember);
     }
 
-    private Member verifiedMember(long memberId) {
-        Optional<Member> member = memberRepository.findById(memberId);
-
-        Member verfiedMember =
-                member.orElseThrow(() ->
-                        new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        return verfiedMember;
-    }
-
     private void verifyExistMember(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if(member.isPresent()) {
@@ -116,7 +106,6 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_EXISTS);
         }
     }
-
 
 //    private void checkDuplicatedEmail(String email) {
 //        Optional<Member> member = memberRepository.findByEmail(email);
@@ -141,8 +130,8 @@ public class MemberService {
 //            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
 //        }
 
-
         String username = (String) authentication.getPrincipal();
+
         return memberRepository.findByEmail(username)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }

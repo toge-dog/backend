@@ -1,8 +1,5 @@
 package com.togedog.member.mapper;
 
-import com.togedog.exception.BusinessLogicException;
-import com.togedog.exception.ExceptionCode;
-import com.togedog.friend.dto.Dto;
 import com.togedog.member.dto.MemberDto;
 import com.togedog.member.entity.Member;
 import org.mapstruct.AfterMapping;

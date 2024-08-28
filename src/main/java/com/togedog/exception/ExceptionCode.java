@@ -30,7 +30,7 @@ public enum ExceptionCode {
     NICKNAME_EXISTS(409, "NickName exists"),
 
     //friend 관련
-    REQUEST_NOT_FOUND(404, "Request Not Found"),
+    FRIEND_REQUEST_NOT_FOUND(404, "Request Not Found"),
 
     //Pet 관련
     PET_NOT_FOUND(404, "Pet Not Found"),

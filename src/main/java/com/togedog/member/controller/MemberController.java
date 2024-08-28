@@ -24,6 +24,7 @@ import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
 
+
 @RestController
 @Validated
 @RequestMapping
@@ -85,7 +86,7 @@ public class MemberController {
                 new SingleResponseDto<>(memberMapper.memberToResponseDto(member)), HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/members")
     public ResponseEntity getMembers(@RequestParam @Positive int page,
                                      @RequestParam @Positive int size,
                                      Authentication authentication) {
@@ -156,7 +157,6 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         String fromEmail = authentication.getName();
-
         friendService.addFriend(fromEmail, toEmail);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -180,10 +180,20 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/reject/{member-email}/{friend-email}")
-    public ResponseEntity rejectFriendRequest(@PathVariable("member-email") String memberEmail,
-                                              @PathVariable("friend-email") String friendEmail) {
-        friendService.rejectFriendRequest(memberEmail, friendEmail);
+    @DeleteMapping("/reject/{friend-id}")
+    public ResponseEntity rejectFriendRequest(@PathVariable("friend-id") @Positive long friendId,
+                                              Authentication authentication) {
+        String email = null;
+        if (authentication != null) {
+            email = (String) authentication.getPrincipal();
+            boolean isLoggedOut = !authService.isTokenValid(email);
+            if (isLoggedOut) {
+                return new ResponseEntity<>("User Logged Out", HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        friendService.rejectFriendRequest(friendId, authentication);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

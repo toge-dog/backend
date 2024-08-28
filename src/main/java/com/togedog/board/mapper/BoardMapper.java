@@ -51,16 +51,18 @@ public interface BoardMapper {
     default BoardDto.ResponseBoard boardToBoardDtoResponse(Board board) {
         BoardDto.ResponseBoard responseBoard = new BoardDto.ResponseBoard();
 
+        responseBoard.setBoardId(board.getBoardId());
         responseBoard.setTitle(board.getTitle());
         responseBoard.setAuthor(board.getMember().getName());
         responseBoard.setContent(board.getContent());
         responseBoard.setContentImg(board.getContentImg());
         responseBoard.setBoardType(board.getBoardType().getBoardDescription());
         responseBoard.setBoardStatus(board.getBoardStatus().getStatusDescription());
-        responseBoard.setLikesCount(board.getLikesCount());
-        responseBoard.setViewCount(board.getViewCount());
+        responseBoard.setLikesCount(board.getLikesCount() != null ? board.getLikesCount() : 0);
+        responseBoard.setViewCount(board.getViewCount() != null ? board.getViewCount() : 0);
 
-        List<CommentDto.Response> commentList = board.getComments().stream()
+        List<CommentDto.Response> commentList = board.getComments()
+                .stream()
                 .filter(c -> c.getCommentStatus() != Comment.CommentStatus.COMMENT_DELETED)
                 .map(c -> {
                     CommentDto.Response commentResponseDto = new CommentDto.Response();
@@ -95,15 +97,15 @@ public interface BoardMapper {
                 .filter(status -> !status.getBoardStatus().equals(Board.BoardStatus.BOARD_DELETED))
                 .map(board -> BoardDto.Response
                         .builder()
+                        .boardId(board.getBoardId())
                         .title(board.getTitle())
                         .author(board.getMember().getName())
                         .content(board.getContent())
                         .boardType(board.getBoardType().getBoardDescription())
                         .boardStatus(board.getBoardStatus().getStatusDescription())
-                        .likesCount(board.getLikesCount())
-                        .viewCount(board.getViewCount())
+                        .likesCount(board.getLikesCount() != null ? board.getLikesCount() : 0)
+                        .viewCount(board.getViewCount() != null ? board.getViewCount() : 0)
                         .build())
                 .collect(Collectors.toList());
     }
-
 }

@@ -1,7 +1,6 @@
 package com.togedog.member.dto;
 
 import com.togedog.pet.dto.PetDto;
-import com.togedog.pet.entity.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -80,6 +79,8 @@ public class MemberDto {
     @NoArgsConstructor
     public static class Response {
         private String name;
+
+        private long requestId;
 
         private String phone;
 

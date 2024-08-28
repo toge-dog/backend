@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Member member = (Member) authResult.getPrincipal();
 
         String accessToken = delegateAccessToken(member);
-        String refreshToken = delegateRefreshToken(member);
+        String refreshToken = delegateRefreshToken(member, accessToken);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     *
     * @param member의 정보
     * @return AccessToken을 만들어서 반환
-    * @author Tizesin(신민준)
+    * @author Tizesin(신민준), 황진혁
     */
     private String delegateAccessToken(Member member) {
         Map<String, Object> claims = new HashMap<>();
@@ -97,9 +97,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      *
      * @param member의 정보
      * @return RefreshToken을 만들어서 반환
-     * @author Tizesin(신민준)
+     * @author Tizesin(신민준), 황진혁
      */
-    private String delegateRefreshToken(Member member) {
+    private String delegateRefreshToken(Member member, String accessToken) {
         // 수정
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", member.getEmail());
@@ -110,7 +110,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 수정
         String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
-        String accessToken = jwtTokenizer.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
         String refreshToken = jwtTokenizer.generateRefreshToken(subject, expiration, base64EncodedSecretKey, accessToken);
 
         return refreshToken;

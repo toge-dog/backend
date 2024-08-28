@@ -33,11 +33,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
-        return boardRepository.findAllByBoardType(boardType, pageable);
-    }
-
     public BoardType convertToBoardType(String boardType) {
         try {
             return BoardType.valueOf(boardType.toUpperCase());
@@ -84,6 +79,11 @@ public class BoardService {
         return findBoard;
     }
 
+    public Page<Board> findBoardsByType(BoardType boardType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("boardId").descending());
+        return boardRepository.findAllByBoardType(boardType, pageable);
+    }
+
     public void deleteBoard(long boardId, Authentication authentication){
         extractMemberFromAuthentication(authentication);
         Board findBoard = findVerifiedBoard(boardId);
@@ -102,10 +102,6 @@ public class BoardService {
         Board result = findBoard.orElseThrow(()->
                 new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
         return result;
-    }
-
-    public Page<Board> findBoards(int page, int size){
-        return boardRepository.findAll(PageRequest.of(page,size, Sort.by("boardId").descending()));
     }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {

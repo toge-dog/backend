@@ -1,12 +1,7 @@
 package com.togedog.board.dto;
 
-import com.togedog.board.entity.Board;
 import com.togedog.board.entity.BoardType;
 import com.togedog.comment.dto.CommentDto;
-import com.togedog.comment.dto.CommentDto.Response;
-import com.togedog.comment.entity.Comment;
-import com.togedog.member.entity.Member;
-import com.togedog.reply.dto.ReplyDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +11,13 @@ import lombok.Builder;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BoardDto{
     @Setter
-    @NoArgsConstructor
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Post {
         @NotBlank
         @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s]+$", message = "제목은 영문자,숫자,공백,한글만 허용됩니다")
@@ -60,6 +54,7 @@ public class BoardDto{
     @NoArgsConstructor
     @Builder
     public static class Response {
+        private long boardId;
         private String title;
         private String author;
         private String content;
@@ -75,12 +70,12 @@ public class BoardDto{
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseBoard {
+        private long boardId;
         private String title;
         private String author;
         private String content;
         private String contentImg;
         private List<CommentDto.Response> comments;
-        private List<ReplyDto.Response> replies;
         private String boardType;
         private String boardStatus;
         private int likesCount;

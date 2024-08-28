@@ -34,6 +34,19 @@ public class FriendService {
                 .orElseThrow(()-> new IllegalArgumentException("친구요청을 찾을수 없음"));
     }
 
+    public List<Friend> getFriendRequests(String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        List<Friend> friendRequests = friendRepository.
+                findByFriendAndFriendStatusNot(member,Friend.Status.ACCEPTED);
+        return friendRequests;
+//        return friendRequests.stream()
+//                .filter(friend -> !friend.getFriendStatus().equals(Friend.Status.ACCEPTED))
+//                .map(Friend::getMember)
+//                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Page<Friend> getFriends(int page, int size) {
         return friendRepository.findAll(PageRequest.of(page, size,
@@ -89,7 +102,7 @@ public class FriendService {
         Optional<Friend> optionalFriend = friendRepository.findById(friendId);
 
         Friend friend = optionalFriend.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+                new BusinessLogicException(ExceptionCode.FRIEND_REQUEST_NOT_FOUND));
 
         friend.setFriendStatus(Friend.Status.ACCEPTED);
 
@@ -98,8 +111,11 @@ public class FriendService {
         // verifedMember.getFriend -> 팬딩상태를 수락으로 변경 후 저장
         // 다음으로 verifedMember.요청이던 수락이던 맴버 둘 다 찾아서, 서로 위치가 바뀐 friend 객체 새롭게 만들고
         // 해당 friend의 상태를 수락으로 바꾸고 저장
+        createReverseFriendship(friend);
+    }
 
-        // 역방향 친구 관계도 생성
+    private void createReverseFriendship(Friend friend) {
+        // 역방향 친구 관계 생성
         Friend reverseFriend = new Friend();
         reverseFriend.setMember(friend.getFriend()); // 요청을 받은 사람이 역으로 요청을 보낸 사람을 친구로 설정
         reverseFriend.setFriend(friend.getMember());
@@ -107,17 +123,30 @@ public class FriendService {
         friendRepository.save(reverseFriend);
     }
 
+//    @Transactional
+//    public void rejectFriendRequest(String forEmail, String toEmail) {
+//        Member member = memberRepository.findByEmail(forEmail)
+//                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+//        Member friendMember = memberRepository.findByEmail(toEmail)
+//                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+//
+//        Friend friendRequest = friendRepository.findByMemberAndFriend(member, friendMember)
+//                .orElseThrow(()-> new IllegalArgumentException("친구요청을 찾을수 없음"));
+//
+//        friendRepository.delete(friendRequest);
+//    }
+
     @Transactional
-    public void rejectFriendRequest(String forEmail, String toEmail) {
-        Member member = memberRepository.findByEmail(forEmail)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        Member friendMember = memberRepository.findByEmail(toEmail)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    public void rejectFriendRequest(long friendId, Authentication authentication) {
+        Member recipient = extractMemberFromAuthentication(authentication);
 
-        Friend friendRequest = friendRepository.findByMemberAndFriend(member, friendMember)
-                .orElseThrow(()-> new IllegalArgumentException("친구요청을 찾을수 없음"));
+        Optional<Friend> optionalFriend = friendRepository.findById(friendId);
 
-        friendRepository.delete(friendRequest);
+        Friend friend = optionalFriend.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.FRIEND_REQUEST_NOT_FOUND));
+
+        // 친구 요청을 거절하면, 요청을 삭제합니다.
+        friendRepository.delete(friend);
     }
 
     private Member extractMemberFromAuthentication(Authentication authentication) {
