@@ -101,6 +101,7 @@ public interface BoardMapper {
                         .title(board.getTitle())
                         .author(board.getMember().getName())
                         .content(board.getContent())
+                        .contentImg(board.getContentImg())
                         .boardType(board.getBoardType().getBoardDescription())
                         .boardStatus(board.getBoardStatus().getStatusDescription())
                         .likesCount(board.getLikesCount() != null ? board.getLikesCount() : 0)

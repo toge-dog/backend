@@ -20,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class FriendService {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
