@@ -14,8 +14,8 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 public class BoardDto{
-    @Getter
     @Setter
+    @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Post {

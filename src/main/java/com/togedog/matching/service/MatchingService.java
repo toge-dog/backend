@@ -1,16 +1,13 @@
 package com.togedog.matching.service;
 
 import com.togedog.eventListener.CustomEvent;
-import com.togedog.eventListener.EventCaseEnum;
 import com.togedog.exception.BusinessLogicException;
 import com.togedog.exception.ExceptionCode;
 import com.togedog.matching.entity.Matching;
 import com.togedog.matching.repository.MatchingRepository;
-import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.member.entity.Member;
 import com.togedog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import static com.togedog.eventListener.EventCaseEnum.EventCase.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +56,9 @@ public class MatchingService {
             CustomEvent event = new CustomEvent(this, DELETE_RELATED_MATCHING_STAND_BY_DATA,
                     findMatching.getHostMember().getMemberId());
             eventPublisher.publishEvent(event);
+            event = new CustomEvent(this, DELETE_MARKER,
+                    findMatching.getHostMember().getEmail());
+            eventPublisher.publishEvent(event);
         }
         Matching result = findMatching;
         return matchingRepository.save(result);
@@ -84,11 +83,16 @@ public class MatchingService {
     }
 
     @Transactional(readOnly = true)
-    public Matching findVerifiedMatch(String email) {
+    public Matching findVerifiedMatch(String email,Authentication authentication) {
+        extractMemberFromAuthentication(authentication);
         Optional<Matching> findMatch =
-                matchingRepository.findByHostMember_Email(email);
+                matchingRepository.findByHostMember_EmailAndMatchStatus(email, Matching.MatchStatus.MATCH_HOSTING);
         Matching result = findMatch.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.MATCH_NOT_FOUND));
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        result.setHostMember(member);
+
         return result;
     }
     @Transactional(readOnly = true)

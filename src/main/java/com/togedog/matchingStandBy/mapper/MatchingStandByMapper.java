@@ -5,42 +5,41 @@ import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface MatchingStandByMapper {
-    MatchingStandBy matchingStandByPostDtoToMatchingStandBy(MatchingStandByDto.Post post);
     MatchingStandBy matchingStandByPatchDtoToMatchingStandBy(MatchingStandByDto.Patch patch);
 
     @Named("toResponseHost")
-    default List<MatchingStandByDto.ResponseHost> matchingStandBysToMatchingStandByDtoResponseHost(List<MatchingStandBy> matchingStandBys){
+    default List<MatchingStandByDto.Responses> matchingStandBysToMatchingStandByDtoResponseHost(List<MatchingStandBy> matchingStandBys){
          return matchingStandBys
                  .stream()
-                 .map(matchingStandBy -> MatchingStandByDto.ResponseHost
+                 .map(matchingStandBy -> MatchingStandByDto.Responses
                          .builder()
                          .matchingStandById(matchingStandBy.getMatchingStandById())
-                         .status(matchingStandBy.getStatus().getStatusDescription())
-                         .hostNickName(matchingStandBy.getMatching().getHostMember().getNickName())
-                         .hostPetImage(matchingStandBy.getMatching().getHostMember().getProfileImage())
-                         .createdAt(matchingStandBy.getCreatedAt())
-                         .modifiedAt(matchingStandBy.getModifiedAt())
+                         .status(matchingStandBy.getStatus().getStatusNumber() == 1 ? "수락 버튼" :
+                                 matchingStandBy.getStatus().getStatusDescription())
+                         .partnerNickName(matchingStandBy.getGuestMember().getNickName())
+                         .partnerPetImage(matchingStandBy.getGuestMember().getProfileImage())
+                         .createdAt(matchingStandBy.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")))
                          .build())
                  .collect(Collectors.toList());
     }
 
     @Named("toResponseGuest")
-    default List<MatchingStandByDto.ResponseGuest> matchingStandBysToMatchingStandByDtoResponseGuest(List<MatchingStandBy> matchingStandBys) {
+    default List<MatchingStandByDto.Responses> matchingStandBysToMatchingStandByDtoResponseGuest(List<MatchingStandBy> matchingStandBys) {
         return matchingStandBys
                 .stream()
-                .map(matchingStandBy -> MatchingStandByDto.ResponseGuest
+                .map(matchingStandBy -> MatchingStandByDto.Responses
                         .builder()
                         .matchingStandById(matchingStandBy.getMatchingStandById())
                         .status(matchingStandBy.getStatus().getStatusDescription())
-                        .guestNickName(matchingStandBy.getGuestMember().getNickName())
-                        .guestPetImage(matchingStandBy.getGuestMember().getProfileImage())
-                        .createdAt(matchingStandBy.getCreatedAt())
-                        .modifiedAt(matchingStandBy.getModifiedAt())
+                        .partnerNickName(matchingStandBy.getMatching().getHostMember().getNickName())
+                        .partnerPetImage(matchingStandBy.getMatching().getHostMember().getProfileImage())
+                        .createdAt(matchingStandBy.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")))
                         .build())
                 .collect(Collectors.toList());
     };

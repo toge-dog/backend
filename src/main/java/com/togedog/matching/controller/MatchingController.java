@@ -57,10 +57,10 @@ public class MatchingController {
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity getMatching(@PathVariable("email") String email) {
-        Matching findMatching = service.findVerifiedMatch(email);
+    public ResponseEntity getMatching(@PathVariable("email") String email,Authentication authentication) {
+        Matching findMatching = service.findVerifiedMatch(email,authentication);
         return new ResponseEntity<>(
-                new SingleResponseDto<>(mapper.matchingToMatchingResponseDto(findMatching)),
+                new SingleResponseDto<>(mapper.matchingToMatchingResponseCardDto(findMatching)),
                 HttpStatus.OK);
     }
 

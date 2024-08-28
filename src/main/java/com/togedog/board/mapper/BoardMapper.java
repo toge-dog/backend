@@ -13,6 +13,8 @@ import com.togedog.comment.dto.CommentDto.Response;
 import com.togedog.comment.entity.Comment;
 
 import com.togedog.member.entity.Member;
+import com.togedog.reply.dto.ReplyDto;
+import com.togedog.reply.entity.Reply;
 import org.mapstruct.Mapper;
 
 
@@ -68,6 +70,17 @@ public interface BoardMapper {
                     commentResponseDto.setComment(c.getComment());
                     commentResponseDto.setName(c.getMember().getName());
                     commentResponseDto.setBoardId(c.getBoard().getBoardId());
+
+                    List<ReplyDto.Response> replyList = c.getReplies().stream()
+                            .filter(r -> r.getReplyStatus() != Reply.ReplyStatus.REPLY_DELETED)
+                            .map(r -> ReplyDto.Response.builder()
+                                    .replyId(r.getReplyId())
+                                    .reply(r.getReply())
+                                    .name(r.getMember().getName())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    commentResponseDto.setReplies(replyList);
                     return commentResponseDto;
                 })
                 .collect(Collectors.toList());

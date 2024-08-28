@@ -5,6 +5,7 @@ import com.togedog.matching.service.MatchingService;
 import com.togedog.matchingStandBy.entity.MatchingStandBy;
 import com.togedog.matchingStandBy.service.MatchingStandByService;
 import com.togedog.member.service.MemberService;
+import com.togedog.redis.MarkerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class ServiceEventListener {
     private final ChatRoomService chatRoomService;
     private final MatchingStandByService matchingStandByService;
     private final MemberService memberService;
+    private final MarkerService markerService;
 
     @EventListener
     public void handleMyCustomEvent(CustomEvent event) {
@@ -42,6 +44,12 @@ public class ServiceEventListener {
                 log.debug("Event : CREATE_CHAT_ROOM");
                 chatRoomService.createChatRoom(memberService.createChatRoomForCustomEvent(event.getResources()));
                 break;
+            case DELETE_MARKER:
+                log.debug("Event : DELETE_MARKER");
+                String markerInfo = "marker:" + (String)event.getResource();
+                markerService.deleteMarker(markerInfo);
+
+
         }
     }
 }
